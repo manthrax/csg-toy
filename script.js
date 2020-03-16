@@ -1,5 +1,4 @@
 let camera, scene, renderer;
-console.log(THREE);
 
 init();
 animate();
@@ -10,11 +9,6 @@ function init() {
 
   scene = new THREE.Scene();
 
-  const geometry = new THREE.PlaneBufferGeometry(2, 2);
-  const material = new THREE.MeshNormalMaterial();
-  const mesh = new THREE.Mesh(geometry, material);
-  scene.add(mesh);
-
   renderer = new THREE.WebGLRenderer({
     antialias: true,
     alpha: true,
@@ -23,7 +17,12 @@ function init() {
   renderer.setPixelRatio(window.devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
-  // const controls = new OrbitControls(camera, renderer.domElement);
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  
+  const geometry = new THREE.PlaneBufferGeometry(2, 2);
+  const material = new THREE.MeshNormalMaterial();
+  const mesh = new THREE.Mesh(geometry, material);
+  scene.add(mesh);
 
   onWindowResize();
   window.addEventListener('resize', onWindowResize, false);
