@@ -1,3 +1,13 @@
+/*
+  Most of the idea was elaborated upon Yuri's deconstruction:
+  https://www.youtube.com/watch?v=esgRzxghD0Q
+  
+  Also, make sure to read about instantiating and draw calls:
+  https://velasquezdaniel.com/blog/rendering-100k-spheres-instantianing-and-draw-calls/
+  
+  Play with it! :)
+*/
+
 let camera, scene, renderer;
 let material;
 let clock;
@@ -53,7 +63,7 @@ const vertexShader = `
     vUv = uv;
     vRandom = aRotationAngle;
 
-    float separation = 1.;
+    float separation = 2.;
     vec3 pos = position + aPosition * separation;
 
     float t = uTime * 0.5;
@@ -64,7 +74,7 @@ const vertexShader = `
     // Rotate each instance geometry
     pos = rotate(pos, aRotationAxis, aRotationAngle * PI * 2.);
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.);
   }
 `;
 
@@ -76,6 +86,7 @@ const fragmentShader = `
 
   uniform float uTime;
 
+  // https://iquilezles.org/www/articles/palettes/palettes.htm
   vec3 palette(in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d) {
     return a + b * cos(6.28318 * (c * t + d));
   }
@@ -95,12 +106,12 @@ const fragmentShader = `
       abs(vUv.x - o - 1.) > length && 
       abs(vUv.x - o + 1.) > length
     ) {
-      // discard; // Comment this line to see the whole lines/ribbons
+       //discard; // Comment this line to see the whole lines/ribbons
     }
 
-    // https://iquilezles.org/www/articles/palettes/palettes.htm
+    float freq = map(vRandom, 0., 1., 1., 10.);
     vec3 iQolor = palette(
-      sin(vUv.x * 2. + t), 
+      sin(vUv.x * freq + t),
       vec3(0.5, 0.5, 0.5),	
       vec3(0.5, 0.5, 0.5),	
       vec3(1.0, 1.0, 1.0), 
@@ -117,7 +128,7 @@ animate();
 
 function init() {
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 0, 2.5);
+  camera.position.set(0, 0, 7.5);
 
   scene = new THREE.Scene();
 
@@ -129,7 +140,7 @@ function init() {
   renderer.setPixelRatio(window.devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
-  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+   const controls = new THREE.OrbitControls(camera, renderer.domElement);
   clock = new THREE.Clock();
   
   // Base Geometry
@@ -146,7 +157,7 @@ function init() {
   });
   
   // Instance Geometry
-  const instanceCount = 1;
+  const instanceCount = 3;
   const instancedGeometry = new THREE.InstancedBufferGeometry().copy(baseGeometry);
   instancedGeometry.maxInstancedCount = instanceCount;
 
