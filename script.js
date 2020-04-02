@@ -63,7 +63,7 @@ const vertexShader = `
     vUv = uv;
     vRandom = aRotationAngle;
 
-    float separation = 2.;
+    float separation = 5.;
     vec3 pos = position + aPosition * separation;
 
     float t = uTime * 0.5;
@@ -106,10 +106,10 @@ const fragmentShader = `
       abs(vUv.x - o - 1.) > length && 
       abs(vUv.x - o + 1.) > length
     ) {
-       //discard; // Comment this line to see the whole lines/ribbons
+       discard; // Comment this line to see the whole lines/ribbons
     }
 
-    float freq = map(vRandom, 0., 1., 1., 10.);
+    float freq = map(vRandom, 0., 1., 1., 5.);
     vec3 iQolor = palette(
       sin(vUv.x * freq + t),
       vec3(0.5, 0.5, 0.5),	
@@ -140,7 +140,7 @@ function init() {
   renderer.setPixelRatio(window.devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
-   const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  // const controls = new THREE.OrbitControls(camera, renderer.domElement);
   clock = new THREE.Clock();
   
   // Base Geometry
@@ -157,7 +157,7 @@ function init() {
   });
   
   // Instance Geometry
-  const instanceCount = 3;
+  const instanceCount = 250;
   const instancedGeometry = new THREE.InstancedBufferGeometry().copy(baseGeometry);
   instancedGeometry.maxInstancedCount = instanceCount;
 
