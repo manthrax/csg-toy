@@ -63,7 +63,7 @@ const vertexShader = `
     vUv = uv;
     vRandom = aRotationAngle;
 
-    float separation = 15.;
+    float separation = 10.;
     vec3 pos = position + aPosition * separation;
 
     float t = uTime * 0.5;
