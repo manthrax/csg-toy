@@ -1,8 +1,8 @@
 /*
-  Most of the idea was elaborated upon Yuri's deconstruction:
+  Created upon Yuri's deconstruction, make sure to watch it:
   https://www.youtube.com/watch?v=esgRzxghD0Q
   
-  Also, make sure to read about instantiating and draw calls:
+  Also, if you want to know more about instantiating and draw calls:
   https://velasquezdaniel.com/blog/rendering-100k-spheres-instantianing-and-draw-calls/
   
   Play with it! :)
@@ -63,7 +63,7 @@ const vertexShader = `
     vUv = uv;
     vRandom = aRotationAngle;
 
-    float separation = 5.;
+    float separation = 15.;
     vec3 pos = position + aPosition * separation;
 
     float t = uTime * 0.5;
@@ -99,7 +99,7 @@ const fragmentShader = `
     float rt = map(vRandom, 0., 1., 0.05, 0.2); // Map value to a shorter range to have different progress in each geometry
     float t = uTime * rt;
     float o = fract(t); // Get fractional of time (0.1, 0.2 ... 0.99) for each second
-    float length = map(vRandom, 0., 1., 0.01, 0.025); // Map value to a shorter range to have different progress lengths
+    float length = map(vRandom, 0., 1., 0.01, 0.02); // Map value to a shorter range to have different progress lengths
 
     if(
       abs(vUv.x - o) > length && 
@@ -128,7 +128,7 @@ animate();
 
 function init() {
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 0, 7.5);
+  camera.position.set(0, 0, 5);
 
   scene = new THREE.Scene();
 
@@ -157,7 +157,7 @@ function init() {
   });
   
   // Instance Geometry
-  const instanceCount = 250;
+  const instanceCount = 1000;
   const instancedGeometry = new THREE.InstancedBufferGeometry().copy(baseGeometry);
   instancedGeometry.maxInstancedCount = instanceCount;
 
