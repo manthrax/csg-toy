@@ -53,21 +53,18 @@ const vertexShader = `
     vUv = uv;
     vRandom = aRotationAngle;
 
-    vec3 pos = position + aPosition * 1.;
+    float separation = 1.;
+    vec3 pos = position + aPosition * separation;
 
     float t = uTime * 0.5;
 
-    vec3 distortion = getDistortion(pos.x);
+    vec3 distortion = getDistortion(pos.x); // Get a curvy distortion along the Y vertice component
     pos += distortion;
 
-    float freq = 2.;
-    float amp = 1.0;
-
-    // pos.x += sin(pos.x * freq + t) * amp;
-
+    // Rotate each instance geometry
     pos = rotate(pos, aRotationAxis, aRotationAngle * PI * 2.);
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
   }
 `;
 
@@ -88,21 +85,22 @@ const fragmentShader = `
   }
 
   void main() {
-    float random = map(vRandom, 0., 1., 0.05, 0.2);
-    float rt = uTime * random;
-    float o = fract(rt);
-    float length = map(vRandom, 0., 1., 0.01, 0.025);
+    float rt = map(vRandom, 0., 1., 0.05, 0.2); // Map value to a shorter range to have different progress in each geometry
+    float t = uTime * rt;
+    float o = fract(t); // Get fractional of time (0.1, 0.2 ... 0.99) for each second
+    float length = map(vRandom, 0., 1., 0.01, 0.025); // Map value to a shorter range to have different progress lengths
 
     if(
       abs(vUv.x - o) > length && 
       abs(vUv.x - o - 1.) > length && 
       abs(vUv.x - o + 1.) > length
     ) {
-      discard;
+      // discard; // Comment this line to see the whole lines/ribbons
     }
 
+    // https://iquilezles.org/www/articles/palettes/palettes.htm
     vec3 iQolor = palette(
-      sin(vUv.x * 2. + rt) * 1., 
+      sin(vUv.x * 2. + t), 
       vec3(0.5, 0.5, 0.5),	
       vec3(0.5, 0.5, 0.5),	
       vec3(1.0, 1.0, 1.0), 
@@ -119,7 +117,7 @@ animate();
 
 function init() {
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
- camera.position.set(0, 0, 7.5);
+  camera.position.set(0, 0, 2.5);
 
   scene = new THREE.Scene();
 
@@ -139,6 +137,8 @@ function init() {
   
   // Material
   material = new THREE.ShaderMaterial({
+    vertexShader,
+    fragmentShader,
     uniforms: {
       uTime: new THREE.Uniform(null)
     },
@@ -146,7 +146,7 @@ function init() {
   });
   
   // Instance Geometry
-  const instanceCount = 50;
+  const instanceCount = 1;
   const instancedGeometry = new THREE.InstancedBufferGeometry().copy(baseGeometry);
   instancedGeometry.maxInstancedCount = instanceCount;
 
