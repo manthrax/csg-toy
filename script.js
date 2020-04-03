@@ -98,9 +98,9 @@ const fragmentShader = `
 
   void main() {
     float rt = map(vRandom, 0., 1., 0.05, 0.2); // Map value to a shorter range to have different progress in each geometry
-    float t = uTime * rt * .1;
+    float t = uTime * rt * 0.5;
     float o = fract(t); // Get fractional of time (0.1, 0.2 ... 0.99) for each second
-    float length = map(vRandom, 0., 1., 0.01, 0.02); // Map value to a shorter range to have different progress lengths
+    float length = map(vRandom, 0., 1., 0.03, 0.06); // Map value to a shorter range to have different progress lengths
 
     if(
       abs(vUv.x - o) > length 
@@ -124,8 +124,10 @@ const fragmentShader = `
     );  
 
 vec2 uv = vUv;
-uv.x = (uv.x - o) / length;
-    gl_FragColor = texture2D(tex,uv); //vec4(iQolor, 1.);
+uv.x = (uv.x - o) / -length;
+vec4 txcol = texture2D(tex,uv);
+if(txcol.a<.5)discard;
+    gl_FragColor =  txcol * vec4(iQolor, 1.);
   }
 `;
 
@@ -150,11 +152,11 @@ let tex = new THREE.TextureLoader().load('https://cdn.glitch.com/8c6a200d-6243-4
   
   controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.autoRotate= true
-  controls.autoRotateSpeed = 3
+  controls.autoRotateSpeed = 1
   clock = new THREE.Clock();
   
   // Base Geometry
-  const baseGeometry = new THREE.PlaneBufferGeometry(3, .1, 1000, 1);
+  const baseGeometry = new THREE.PlaneBufferGeometry(10, .3, 1000, 1);
   
   // Material
   material = new THREE.ShaderMaterial({
@@ -165,8 +167,7 @@ let tex = new THREE.TextureLoader().load('https://cdn.glitch.com/8c6a200d-6243-4
       tex:{value:tex}
     },
     side: THREE.DoubleSide,
-    transparent:true,
-    alphaTest: .
+    transparent:true
   });
   
   // Instance Geometry
