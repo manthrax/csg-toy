@@ -8,7 +8,7 @@
   Play with it! :)
 */
 
-let camera, scene, renderer;
+let camera, scene, renderer, controls;
 let material;
 let clock;
 
@@ -97,7 +97,7 @@ const fragmentShader = `
 
   void main() {
     float rt = map(vRandom, 0., 1., 0.05, 0.2); // Map value to a shorter range to have different progress in each geometry
-    float t = uTime * rt;
+    float t = uTime * rt * 2.;
     float o = fract(t); // Get fractional of time (0.1, 0.2 ... 0.99) for each second
     float length = map(vRandom, 0., 1., 0.01, 0.02); // Map value to a shorter range to have different progress lengths
 
@@ -107,7 +107,9 @@ const fragmentShader = `
       abs(vUv.x - o + 1.) > length
     ) {
       discard; // Comment this line to see the whole lines/ribbons
-    }
+    }else{
+  
+}
 
     float freq = map(vRandom, 0., 1., 1., 5.);
     vec3 iQolor = palette(
@@ -140,7 +142,11 @@ function init() {
   renderer.setPixelRatio(window.devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
-  // const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+  
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.autoRotate= true
+  controls.autoRotateSpeed = 3
   clock = new THREE.Clock();
   
   // Base Geometry
@@ -157,7 +163,7 @@ function init() {
   });
   
   // Instance Geometry
-  const instanceCount = 1000;
+  const instanceCount = 10000;
   const instancedGeometry = new THREE.InstancedBufferGeometry().copy(baseGeometry);
   instancedGeometry.maxInstancedCount = instanceCount;
 
@@ -215,5 +221,6 @@ function animate() {
 }
 
 function render() {
+  controls.update()
   renderer.render(scene, camera);
 }
