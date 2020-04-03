@@ -106,7 +106,7 @@ const fragmentShader = `
       abs(vUv.x - o - 1.) > length && 
       abs(vUv.x - o + 1.) > length
     ) {
-       discard; // Comment this line to see the whole lines/ribbons
+      discard; // Comment this line to see the whole lines/ribbons
     }
 
     float freq = map(vRandom, 0., 1., 1., 5.);
