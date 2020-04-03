@@ -85,6 +85,7 @@ const fragmentShader = `
   varying float vRandom;
 
   uniform float uTime;
+  uniform sampler2D tex;
 
   // https://iquilezles.org/www/articles/palettes/palettes.htm
   vec3 palette(in float t, in vec3 a, in vec3 b, in vec3 c, in vec3 d) {
@@ -97,14 +98,15 @@ const fragmentShader = `
 
   void main() {
     float rt = map(vRandom, 0., 1., 0.05, 0.2); // Map value to a shorter range to have different progress in each geometry
-    float t = uTime * rt * 2.;
+    float t = uTime * rt * .1;
     float o = fract(t); // Get fractional of time (0.1, 0.2 ... 0.99) for each second
     float length = map(vRandom, 0., 1., 0.01, 0.02); // Map value to a shorter range to have different progress lengths
 
     if(
-      abs(vUv.x - o) > length && 
-      abs(vUv.x - o - 1.) > length && 
-      abs(vUv.x - o + 1.) > length
+      abs(vUv.x - o) > length 
+//&& 
+//      abs(vUv.x - o - 1.) > length && 
+//      abs(vUv.x - o + 1.) > length
     ) {
       discard; // Comment this line to see the whole lines/ribbons
     }else{
@@ -112,6 +114,7 @@ const fragmentShader = `
 }
 
     float freq = map(vRandom, 0., 1., 1., 5.);
+
     vec3 iQolor = palette(
       sin(vUv.x * freq + t),
       vec3(0.5, 0.5, 0.5),	
@@ -120,8 +123,9 @@ const fragmentShader = `
       vec3(0.00, 0.33, 0.67) 
     );  
 
-
-    gl_FragColor = vec4(iQolor, 1.);
+vec2 uv = vUv;
+uv.x = (uv.x - o) / length;
+    gl_FragColor = texture2D(tex,uv); //vec4(iQolor, 1.);
   }
 `;
 
@@ -142,7 +146,7 @@ function init() {
   renderer.setPixelRatio(window.devicePixelRatio);
   document.body.appendChild(renderer.domElement);
 
-
+let tex = new THREE.TextureLoader().load('https://cdn.glitch.com/8c6a200d-6243-4e2a-b5c9-d6846ac00d17%2FYSB_60S_812_750x.png?v=1585936092913')
   
   controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.autoRotate= true
@@ -157,9 +161,12 @@ function init() {
     vertexShader,
     fragmentShader,
     uniforms: {
-      uTime: new THREE.Uniform(null)
+      uTime: new THREE.Uniform(null),
+      tex:{value:tex}
     },
     side: THREE.DoubleSide,
+    transparent:true,
+    alphaTest: .
   });
   
   // Instance Geometry
