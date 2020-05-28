@@ -112,7 +112,6 @@ const fragmentShader = `
     }else{
   
 }
-
     float freq = map(vRandom, 0., 1., 1., 5.);
 
     vec3 iQolor = palette(
