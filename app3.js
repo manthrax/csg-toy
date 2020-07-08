@@ -15,9 +15,10 @@ renderer.setClearColor(0x101010);
 document.body.appendChild(renderer.domElement);
 ocontrols = new OrbitControls(camera, renderer.domElement);
 //ocontrols.autoRotate = true;
+
 const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 1, 1);
-const backMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.1,transparent:true,side:THREE.BackSide,depthWrite:false});
-const frontMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.1,transparent:true,side:THREE.FrontSide});
+const backMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.9,transparent:true,side:THREE.BackSide,depthWrite:false});
+const frontMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.9,transparent:true,side:THREE.FrontSide});
 
 const light = new THREE.PointLight("white", 0.5);
 light.position.set(20, 30, 40);
@@ -101,6 +102,7 @@ renderer.setAnimationLoop(() => {
   renderer.render(scene, camera);
 });
 
+/*
 const mesh = new THREE.Mesh(geometry, backMaterial);
 mesh.add(new THREE.Mesh(geometry,frontMaterial));
 mesh.children[0].renderOrder = 2;
@@ -110,9 +112,15 @@ const mesh2 = mesh.clone();
 scene.add(mesh2);
 mesh2.position.set(.25,1.,.25)
 elements = [mesh, mesh2]
+*/
 
 let cadScene = new THREE.Group()
 scene.add(cadScene)
 let fc = new FCAD(cadScene)
 elements = fc.eval(`
 `).elements
+
+
+
+    for(let i=0;i<elements.length;i++)
+      enforceGround(elements[i])

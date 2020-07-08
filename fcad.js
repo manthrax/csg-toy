@@ -70,11 +70,16 @@ class FCAD {
     };
     
     
+const backMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.9,transparent:true,side:THREE.BackSide,depthWrite:false});
+const frontMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.9,transparent:true,side:THREE.FrontSide});
+let mkprim = (geom)=>{
+  
+}
     let material = new THREE.MeshStandardMaterial({color:'blue'})
     let prims = {
-      sphere:new THREE.Mesh(new THREE.SphereGeometry(.25,8,4),material),
+      sphere:new THREE.Mesh(new THREE.SphereGeometry(.25,8,8),material),
       box:new THREE.Mesh(new THREE.BoxGeometry(.5,.5,.5),material),
-      cylinder:new THREE.Mesh(new THREE.CylinderGeometry(.25,.25,.5,8),material),
+      cylinder:new THREE.Mesh(new THREE.CylinderGeometry(.25,.25,.5,16),material),
     }
     
     let self = this;
@@ -84,7 +89,6 @@ class FCAD {
         scene.remove(scene.children[0])
       self.elements.length = 0;
       for(let e=arguments,i=0;i<e.length;i++){
-        //debugger
         let el = e[i]
         let t = el.type;
         if(prims[t])
