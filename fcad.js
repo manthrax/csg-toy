@@ -101,8 +101,12 @@ class FCAD {
     */
     
     let self = this;
-    let doOp=(t,params)=>{
-      
+    let doOp=(el)=>{
+      let t= el.type;
+      if(t==='union'){
+        debugger
+        el.csg.union()
+      }
     }
     
     function render() {
@@ -121,7 +125,7 @@ class FCAD {
           mesh.rotation.copy(el._rotation);
           el._rotation = mesh.rotation
         }
-        else doOp(t)
+        else doOp(el)
         let m = el._mesh;
         self.elements.push(m);
         scene.add(m);
@@ -137,7 +141,7 @@ class FCAD {
 let s = sphere().size(1,1,1).position(.15, 0.25, -.15)
 let b = box().size(1,1,1).position(.15, 0.25, .25)
 let c = cylinder().size(1,1,1).position(.15, 0.25, -.35)
-      render(b,s,c)
+      render(union(b,s,c))
     `;
 
     this.eval(f);
