@@ -17,15 +17,16 @@ const frontMaterial = new THREE.MeshStandardMaterial({
   transparent: true,
   side: THREE.FrontSide
 });
+
 class FNode {
-  constructor(fcad, type) {
+  constructor(fcad, type, args=[]) {
     this.fcad = fcad;
     this.type = type;
     this._size = new THREE.Vector3(1, 1, 1);
     this._scale = new THREE.Vector3(1, 1, 1);
     this._position = new THREE.Vector3(0, 0, 0);
     this._rotation = new THREE.Euler(0, 0, 0, "XYZ");
-    this.children = []
+    this.args = args
   }
   remove(child){
     for(let i=0;i<this.children.length;i++)if(this.children[i]===child){
@@ -78,13 +79,19 @@ class FCAD {
     let sphere = () => new FNode(this, "sphere");
     let box = () => new FNode(this, "box");
     let cylinder = () => new FNode(this, "cylinder");
+    
     let args=()=> Array.prototype.slice.call(arguments)
-    let mesh = src => new FNode(this, "mesh", args());
-    let hull = a => new FNode(this, "hull",  args());
-    let union = a => new FNode(this, "union",  args());
-    let subtract = a => new FNode(this, "subtract",  args());
-    let intersect = a => new FNode(this, "intersect",  args());
-    let invert = a => new FNode(this, "invert",  args());
+    
+    function nnode(type,args){
+      return new FNode(this, type, Array.prototype.slice.call(args))
+    }
+    //new FNode(this, "mesh", args());
+    let mesh = function(){ return nnode("mesh",arguments);}
+    let hull =  function(){ return nnode("hull",arguments);}
+    let union =  function(){ return nnode("union",arguments);}
+    let subtract =  function(){ return nnode("subtract",arguments);}
+    let intersect =  function(){ return nnode("intersect",arguments);}
+    let invert =  function(){ return nnode("invert",arguments);}
 
     let mkprim = geom => {
       let m = new THREE.Mesh(geom, frontMaterial);
@@ -103,9 +110,14 @@ class FCAD {
     let self = this;
     let doOp=(el)=>{
       let t= el.type;
+      el.csg = new CSG()
       if(t==='union'){
-        debugger
-        el.csg.union()
+        //debugger
+        for(let i=0;i<el.args.length;i++){
+          debugger
+          el.csg.union(el.args[i]);
+        }
+     //   el.csg.union()
       }
     }
     
@@ -141,7 +153,8 @@ class FCAD {
 let s = sphere().size(1,1,1).position(.15, 0.25, -.15)
 let b = box().size(1,1,1).position(.15, 0.25, .25)
 let c = cylinder().size(1,1,1).position(.15, 0.25, -.35)
-      render(union(b,s,c))
+let u = union(b,s,c)
+      render(u,b,s,c)
     `;
 
     this.eval(f);
