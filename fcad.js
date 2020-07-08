@@ -2,6 +2,8 @@ import * as THREE from "https://threejs.org/build/three.module.js";
 
 import CSG from "./three-csg.js";
 
+const backMaterial = new THREE.MeshStandardMaterial({color:'red',opacity:.5,transparent:true,side:THREE.BackSide,depthWrite:false});
+const frontMaterial = new THREE.MeshStandardMaterial({color:'blue',opacity:.5,transparent:true,side:THREE.FrontSide});
 class FNode{
   constructor(fcad, type) {
     this.fcad = fcad;
@@ -51,17 +53,20 @@ class FCAD {
       return fn;
     };
     let box = () => {
-      let fn = new FNode(this, "box");
-      return fn;
+      return new FNode(this, "box");
+
     };
     let cylinder = () => {
       let fn = new FNode(this, "cylinder");
       return fn;
     };
     let hull = a => {
+      let fn = new FNode(this, "hull");
       return this;
     };
     let union = a => {
+      let fn = new FNode(this, "union");
+      arguments.slice(0)
       return this;
     };
     let subtract = a => {
@@ -75,7 +80,6 @@ class FCAD {
     };
     
     
-const frontMaterial = new THREE.MeshStandardMaterial({color:'blue',opacity:.25,transparent:true,side:THREE.FrontSide});
 let mkprim = (geom)=>{
   let m = new THREE.Mesh(geom,frontMaterial)
   return m;
@@ -103,8 +107,6 @@ let mkprim = (geom)=>{
       }
       return self;
     }
-    
-    
     
     this.eval = str => {
       eval(str);

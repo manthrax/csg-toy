@@ -27,7 +27,7 @@ const light1 = new THREE.PointLight("white", 0.5);
 light1.position.set(-20, 30, -40);
 scene.add(light1);
 let tcontrol = new TransformControls(camera, renderer.domElement);
-tcontrol.translationSnap = .1
+tcontrol.translationSnap = .05
 tcontrol.rotationSnap = Math.PI/16;
 scene.add(tcontrol);
 let tbox = new THREE.Box3();
