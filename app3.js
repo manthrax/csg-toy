@@ -60,6 +60,7 @@ let selectionMaterial = frontMaterial.clone();
 selectionMaterial.color.set(0xffd000);
 
 let transformGroup = new THREE.Group()
+scene.add(transformGroup)
 tcontrol.attach(transformGroup)
 let elements = []
 let updateInteraction=(event)=>{
@@ -105,7 +106,6 @@ let updateInteraction=(event)=>{
       
       for (var j = 0; j < selection.length; j++)
         transformGroup.attach(selection[j]);
-      
     }
     break;
   }
