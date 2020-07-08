@@ -24,8 +24,8 @@ class FNode extends CSG {
     this.position.set(x, y, z);
     return this;
   }
-  rotation(x, y, z) {
-    this.rotation.set(x, y, z);
+  rotation(x, y, z, order=this.rotation.order) {
+    this.rotation.set(x, y, z, order);
     return this;
   }
   get mesh() {
@@ -41,7 +41,6 @@ class FCAD {
     this.scene = scene;
     this.elements = [];
     let vec3 = (x, y, z) => new THREE.Vector3(x, y, z);
-
     let sphere = () => {
       let fn = new FNode(this, "sphere");
       return fn;
@@ -70,9 +69,18 @@ class FCAD {
       return this;
     };
     let render = () => {
-      
+      while(scene.children.length)scene.remove(scene.children[0])
+      this.elements.length = 0;
+      for(let e=arguments,i=0;i<e.length;i++){
+        let m =e[i].toMesh();
+        this.elements.push(m)
+        scene.add(m)
+      }
       return this;
     };
+    
+    
+    
     this.eval = str => {
       eval(str);
       return this;
