@@ -28,7 +28,6 @@ const light1 = new THREE.PointLight("white", 0.5);
 light1.position.set(-20, 30, -40);
 scene.add(light1);
 let tcontrol = new TransformControls(camera, renderer.domElement);
-tcontrol.attach(mesh);
 scene.add(tcontrol);
 let tbox = new THREE.Box3();
 tcontrol.addEventListener("dragging-changed", event => {
@@ -47,6 +46,13 @@ var mouse = new THREE.Vector2();
 
 let selectionMaterial = mesh.material.clone();
 selectionMaterial.color.set(0xffd000);
+
+let clicked = false;
+function onMouseDown(event) {
+  clicked = true;
+}
+
+let selection = []
 function onMouseMove(event) {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -56,15 +62,28 @@ function onMouseMove(event) {
   scene.traverse(e => {
     if (!(e.isMesh && e.material.color))
         return;
-    if (!e.material.userData.saveMaterial)
-      e.material.userData.saveMaterial = e.material;
-    e.material = e.material.userData.saveMaterial;
+    if (!e.userData.saveMaterial)
+      e.userData.saveMaterial = e.material;
+    e.material = e.userData.saveMaterial;
   });
+
   for (var i = 0; i < intersects.length; i++) {
     intersects[i].object.material = selectionMaterial;
+    if(clicked){
+    if(selection.length)
+      for (var j = 0; j < selection.length; j++) tcontrol.detach(selection[j]);
+  //selection=[]
+    selection=[intersects[i].object]
+    clicked = false;
+    }
+    break;
   }
+  if(selection.length)
+    for (var i = 0; i < selection.length; i++) tcontrol.attach(selection[i]);
 }
+//debugger
 window.addEventListener("mousemove", onMouseMove, false);
+window.addEventListener("mousedown", onMouseDown, false);
 
 let resizeFn = event => {
   let width = window.innerWidth;
