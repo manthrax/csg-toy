@@ -72,14 +72,13 @@ class FCAD {
     
     let material = new THREE.MeshStandardMaterial({color:'blue'})
     let prims = {
-      sphere:new THREE.Mesh(new THREE.SphereGeometry(1,8,8),material),
-      box:new THREE.Mesh(new THREE.BoxGeometry(1,8,8),material),
-      sphere:new THREE.Mesh(new THREE.CylinderGeometry(1,1,8,8),material),
+      sphere:new THREE.Mesh(new THREE.SphereGeometry(.25,8,4),material),
+      box:new THREE.Mesh(new THREE.BoxGeometry(.5,.5,.5),material),
+      cylinder:new THREE.Mesh(new THREE.CylinderGeometry(.25,.25,.5,8),material),
     }
     
     let self = this;
     function render  () {
-      
       
       while(scene.children.length)
         scene.remove(scene.children[0])
@@ -111,7 +110,11 @@ class FCAD {
     
     //this.eval(f);
   //debugger
-    render(sphere().size(1,1,1),box().size(1,1,1).position(.5,.5,.5))
+    render(
+      sphere().size(1,1,1),
+      box().size(1,1,1).position(.5,.5,.5),
+      cylinder()
+    )
   
   }
 }

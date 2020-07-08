@@ -100,7 +100,7 @@ renderer.setAnimationLoop(() => {
   ocontrols.update();
   renderer.render(scene, camera);
 });
-/*
+
 const mesh = new THREE.Mesh(geometry, backMaterial);
 mesh.add(new THREE.Mesh(geometry,frontMaterial));
 mesh.children[0].renderOrder = 2;
@@ -110,8 +110,8 @@ const mesh2 = mesh.clone();
 scene.add(mesh2);
 mesh2.position.set(.25,1.,.25)
 elements = [mesh, mesh2]
-*/
-let cadScene = new THREE.Scene()
+
+let cadScene = new THREE.Group()
 scene.add(cadScene)
 let fc = new FCAD(cadScene)
 elements = fc.eval(`
