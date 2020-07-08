@@ -20,10 +20,8 @@ mesh.add(new THREE.Mesh(geometry,frontMaterial));
 mesh.children[0].renderOrder = 2;
 scene.add(mesh);
 mesh.position.y += 0.5;
-
 const mesh2 = mesh.clone();
 scene.add(mesh2);
-
 const light = new THREE.PointLight("white", 0.5);
 light.position.set(20, 30, 40);
 scene.add(light);
@@ -47,18 +45,14 @@ tcontrol.addEventListener("dragging-changed", event => {
       enforceGround(selection[i])
   }
 });
-let grid = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new GridMaterial());
+let grid = new THREE.Mesh(new THREE.PlaneGeometry(10.0015, 10.0015), new GridMaterial());
 grid.rotation.x = Math.PI * -0.5;
 scene.add(grid);
-
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
-
 let selectionMaterial = mesh.material.clone();
 selectionMaterial.color.set(0xffd000);
-
 let updateInteraction=(event)=>{
-  
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
@@ -69,7 +63,6 @@ let updateInteraction=(event)=>{
     if (!e.userData.saveMaterial) e.userData.saveMaterial = e.material;
     e.material = e.userData.saveMaterial;
   });
-
   for (var i = 0; i < intersects.length; i++) {
     let o = intersects[i].object;
     if(wasDragged) break;
@@ -85,19 +78,8 @@ let updateInteraction=(event)=>{
     break;
   }
 }
-
-let clicked = false;
-function onMouseDown(event) {
-  updateInteraction(event)
-}
-
-function onMouseMove(event) {
-  updateInteraction(event)
-}
-
-window.addEventListener("mousemove", onMouseMove, false);
-window.addEventListener("mousedown", onMouseDown, false);
-
+window.addEventListener("mousemove", updateInteraction, false);
+window.addEventListener("mousedown", updateInteraction, false);
 let resizeFn = event => {
   let width = window.innerWidth;
   let height = window.innerHeight;
@@ -107,11 +89,6 @@ let resizeFn = event => {
 };
 resizeFn();
 window.addEventListener("resize", resizeFn, false);
-
-for (let t = 0; t < 100; t++) {
-  let tm = new THREE.Mesh(new THREE.PlaneGeometry(1, 1));
-}
-
 renderer.setAnimationLoop(() => {
   ocontrols.update();
   renderer.render(scene, camera);

@@ -11,17 +11,26 @@ let fs = `
 varying vec3 vertex;
 uniform vec4 color;
 void main() {
+
+float gridVal;
+  {
+
   vec2 coord = vertex.xy;// Compute anti-aliased world-space grid lines
   vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
   float line = min(grid.x, grid.y);
-  float val =  1.0 - min(line, 1.0);
-  if(val<.5)discard;
-  gl_FragColor = vec4(color.xyz, color.w*val);// Just visualize the grid lines directly
+  gridVal =  1.0 - min(line, 1.0);
+  if(gridVal<.5)discard;
+  
+  }
+  gl_FragColor = vec4(color.xyz, color.w*gridVal);// Just visualize the grid lines directly
 }
 `;
 
 class GridMaterial extends THREE.ShaderMaterial {
   constructor(params) {
+    if(params.src){
+      
+    }
     //ebugger
     super({
       uniforms: {
