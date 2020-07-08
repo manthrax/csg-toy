@@ -42,9 +42,25 @@ let grid = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new GridMaterial());
 grid.rotation.x = Math.PI * -0.5;
 scene.add(grid);
 
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+function onMouseMove( event ) {
+	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;  
+	raycaster.setFromCamera( mouse, camera );
+	// calculate objects intersecting the picking ray
+	var intersects = raycaster.intersectObjects( [mesh] );// scene.children );
+	scene.traverse((e)=>{
+    if(!(e.isMesh && e.material.color))return;
+    if(!e.material.userData.saveColor)e.material.userData.saveColor=e.material.color.clone()
+    else e.material.color.copy(e.material.userData.saveColor);
+  })
+  for ( var i = 0; i < intersects.length; i++ ) {  
+		intersects[ i ].object.material.color.set( 0xff0000 );
+	}
+}
+window.addEventListener( 'mousemove', onMouseMove, false );
 
-	var raycaster = new THREE.Raycaster();
-  var allIntersections = raycaster.intersectObject( mesh, true );
 
 
 let resizeFn = event => {
