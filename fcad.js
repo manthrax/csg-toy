@@ -58,7 +58,9 @@ class FNode {
     return this;
   }
   get mesh() {
+   this.src.updateMatrixWorld()
     let m = CSG.toMesh(this.csg, this.src.matrix, this.src.material);
+    m.updateMatrixWorld()
     m.renderOrder = 2;
     let b = new THREE.Mesh(m.geometry, backMaterial);
     m.add(b);
