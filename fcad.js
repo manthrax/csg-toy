@@ -58,6 +58,7 @@ class FNode {
     return this;
   }
   get mesh() {
+    debugger
     let m = CSG.toMesh(this.csg, this.src.matrix, this.src.material);
     m.renderOrder = 2;
     let b = new THREE.Mesh(m.geometry, backMaterial);
@@ -66,8 +67,15 @@ class FNode {
     return m;
   }
   set mesh(src) {
+    debugger
     this.csg = CSG.fromMesh((this.src = src));
     return this;
+  }
+  getMesh(src){
+    return this.mesh;
+  }
+  setMesh(src){
+    this.mesh = src;
   }
 }
 
@@ -111,23 +119,24 @@ class FCAD {
       let t= el.type;
       el.csg = new CSG()
       if(t==='union'){
+        if(el.args.length)el.src = el.args[0].mesh
         for(let i=0;i<el.args.length;i++){
           el.csg = el.csg.union(el.args[i].csg);
         }
-     //   el.csg.union()
+        el._mesh = el.mesh
+        el._mesh.material = new THREE.MeshStandardMaterial();
       }
     }
     
     function render() {
-      debugger
       while (scene.children.length) scene.remove(scene.children[0]);
       self.elements.length = 0;
       for (let e = arguments, i = 0; i < e.length; i++) {
         let el = e[i];
         let t = el.type;
         if (prims[t]) {
-          el.mesh = prims[t].clone(true);
-          let mesh = el._mesh = el.mesh
+          el.setMesh( prims[t].clone(true) );
+          let mesh = el._mesh = el.getMesh()
           mesh.position.copy(el._position);
           el._position = mesh.position
           mesh.scale.copy(el._scale);
