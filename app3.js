@@ -2,6 +2,7 @@ import * as THREE from "https://threejs.org/build/three.module.js";
 import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
 import { TransformControls } from "https://threejs.org/examples/jsm/controls/TransformControls.js";
 import { ConvexHull } from "https://threejs.org/examples/jsm/math/ConvexHull.js";
+import CSG from "./three-csg.js";
 import GridMaterial from "./grid-material.js";
 let camera, scene, renderer, ocontrols;
 let aspect = window.innerWidth / window.innerHeight;
