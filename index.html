@@ -44,6 +44,12 @@
       };
       resizeFn();
       window.addEventListener("resize", resizeFn, false);
+      
+      for(let t=0;t<100;t++){
+        let tm = new THREE.Mesh(new THREE.PlaneGeometry(1,1))
+        
+      }
+      
       renderer.setAnimationLoop(() => {
         controls.update();
         renderer.render(scene, camera);
