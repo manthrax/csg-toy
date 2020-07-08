@@ -17,8 +17,19 @@ ocontrols = new OrbitControls(camera, renderer.domElement);
 //ocontrols.autoRotate = true;
 
 const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 1, 1);
-const backMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.9,transparent:true,side:THREE.BackSide,depthWrite:false});
-const frontMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.9,transparent:true,side:THREE.FrontSide});
+const backMaterial = new THREE.MeshStandardMaterial({
+  color: "white",
+  opacity: 0.9,
+  transparent: true,
+  side: THREE.BackSide,
+  depthWrite: false
+});
+const frontMaterial = new THREE.MeshStandardMaterial({
+  color: "white",
+  opacity: 0.9,
+  transparent: true,
+  side: THREE.FrontSide
+});
 
 const light = new THREE.PointLight("white", 0.5);
 light.position.set(20, 30, 40);
@@ -27,31 +38,38 @@ const light1 = new THREE.PointLight("white", 0.5);
 light1.position.set(-20, 30, -40);
 scene.add(light1);
 let tcontrol = new TransformControls(camera, renderer.domElement);
-tcontrol.translationSnap = .05
-tcontrol.rotationSnap = Math.PI/16;
+tcontrol.translationSnap = 0.05;
+tcontrol.rotationSnap = Math.PI / 16;
 scene.add(tcontrol);
 let tbox = new THREE.Box3();
-let enforceGround=(mesh)=>{ 
-    tbox.setFromObject(mesh);
-    if (tbox.min.y < 0) mesh.position.y -= tbox.min.y;
-}
+let enforceGround = mesh => {
+  tbox.setFromObject(mesh);
+  if (tbox.min.y < 0) mesh.position.y -= tbox.min.y;
+};
 let selection = [];
 let wasDragged = false;
 tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
-  wasDragged = event.value
+  wasDragged = event.value;
   if (!wasDragged) {
-    for(let i=0;i<selection.length;i++)
-      enforceGround(selection[i])
+    for (let i = 0; i < selection.length; i++) enforceGround(selection[i]);
   }
 });
-let grid = new THREE.Mesh(new THREE.PlaneGeometry(10.0015, 10.0015), new GridMaterial(new THREE.MeshStandardMaterial({
-  map:new THREE.TextureLoader().load('https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fmandala.jpg?v=1594201375330'),
-  transparent:true,
-  opacity:1.,
-  alphaTest:.5,
-  depthWrite:true,
-  side:THREE.DoubleSide})));
+let grid = new THREE.Mesh(
+  new THREE.PlaneGeometry(10.0015, 10.0015),
+  new GridMaterial(
+    new THREE.MeshStandardMaterial({
+      map: new THREE.TextureLoader().load(
+        "https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fmandala.jpg?v=1594201375330"
+      ),
+      transparent: true,
+      opacity: 1,
+      alphaTest: 0.5,
+      depthWrite: true,
+      side: THREE.DoubleSide
+    })
+  )
+);
 grid.rotation.x = Math.PI * -0.5;
 grid.renderOrder = 0;
 scene.add(grid);
@@ -60,62 +78,63 @@ var mouse = new THREE.Vector2();
 let selectionMaterial = frontMaterial.clone();
 selectionMaterial.color.set(0xffd000);
 
-let transformGroup = new THREE.Group()
-scene.add(transformGroup)
-tcontrol.attach(transformGroup)
-let elements = []
-let updateInteraction=(event)=>{
+let transformGroup = new THREE.Group();
+scene.add(transformGroup);
+tcontrol.attach(transformGroup);
+let elements = [];
+let updateInteraction = event => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
   // calculate objects intersecting the picking ray
   var intersects = raycaster.intersectObjects(elements); // scene.children );
 
-  let setMaterial=(m,mat)=>{
+  let setMaterial = (m, mat) => {
     if (!m.userData.saveMaterial) m.userData.saveMaterial = m.material;
     m.material = mat;
-  }
-  let select=(o)=>{
-    
-      for (var j = 0; j < selection.length; j++){
-        scene.attach(selection[j]);
-      }
-      if(!event.shiftKey){
-        let nsel = []
-        for (var j = 0; j < selection.length; j++){
-          if(selection[j] != o){
-            selection[j].material = selection[j].userData.saveMaterial
-            delete selection[j].userData.selected
-          }else nsel.push(selection[j])
-        }
-        selection = nsel
-      }
-      
-      if(o&&!o.userData.selected){
-        selection.push(o);
-        o.userData.selected = true;
-        setMaterial(o,selectionMaterial)
-      }
-      transformGroup.position.set(0,0,0)
-      for (var j = 0; j < selection.length; j++){
-        transformGroup.position.add(selection[j].position)
-      }
-      if(selection.length){
-        transformGroup.position.multiplyScalar(1/selection.length)
-        for (var j = 0; j < selection.length; j++)
-          transformGroup.attach(selection[j]);
-      }
-  
-    if (event.type==='mousedown') {
-      if(intersects.length){
-        let o = intersects[0].object;
-        if(wasDragged) break;
-        wasDragged = false;
-        select(o)
-      }else select()
+  };
+  let select = o => {
+    for (var j = 0; j < selection.length; j++) {
+      scene.attach(selection[j]);
     }
+    if (!event.shiftKey) {
+      let nsel = [];
+      for (var j = 0; j < selection.length; j++) {
+        if (selection[j] != o) {
+          selection[j].material = selection[j].userData.saveMaterial;
+          delete selection[j].userData.selected;
+        } else nsel.push(selection[j]);
+      }
+
+      selection.length = 0;
+      for (let i = 0; i < nsel.length; i++) selection.push(nsel[i]);
+    }
+
+    if (o && !o.userData.selected) {
+      selection.push(o);
+      o.userData.selected = true;
+      setMaterial(o, selectionMaterial);
+    }
+    transformGroup.position.set(0, 0, 0);
+    for (var j = 0; j < selection.length; j++) {
+      transformGroup.position.add(selection[j].position);
+    }
+    if (selection.length) {
+      transformGroup.position.multiplyScalar(1 / selection.length);
+      for (var j = 0; j < selection.length; j++)
+        transformGroup.attach(selection[j]);
+    }
+  };
+  if (event.type === "mousedown") {
+    if (intersects.length) {
+      let o = intersects[0].object;
+      if (!wasDragged) {
+        wasDragged = true;
+        select(o);
+      }
+    } else select();
   }
-}
+};
 
 window.addEventListener("mousemove", updateInteraction, false);
 window.addEventListener("mousedown", updateInteraction, false);
@@ -145,13 +164,10 @@ mesh2.position.set(.25,1.,.25)
 elements = [mesh, mesh2]
 */
 
-let cadScene = new THREE.Group()
-scene.add(cadScene)
-let fc = new FCAD(cadScene)
+let cadScene = new THREE.Group();
+scene.add(cadScene);
+let fc = new FCAD(cadScene);
 elements = fc.eval(`
-`).elements
+`).elements;
 
-
-
-    for(let i=0;i<elements.length;i++)
-      enforceGround(elements[i])
+for (let i = 0; i < elements.length; i++) enforceGround(elements[i]);
