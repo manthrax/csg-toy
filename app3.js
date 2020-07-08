@@ -17,14 +17,7 @@ ocontrols = new OrbitControls(camera, renderer.domElement);
 const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 1, 1);
 const backMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.1,transparent:true,side:THREE.BackSide,depthWrite:false});
 const frontMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.1,transparent:true,side:THREE.FrontSide});
-const mesh = new THREE.Mesh(geometry, backMaterial);
-mesh.add(new THREE.Mesh(geometry,frontMaterial));
-mesh.children[0].renderOrder = 2;
-scene.add(mesh);
-mesh.position.y += 0.5;
-const mesh2 = mesh.clone();
-scene.add(mesh2);
-mesh2.
+
 const light = new THREE.PointLight("white", 0.5);
 light.position.set(20, 30, 40);
 scene.add(light);
@@ -61,14 +54,16 @@ grid.renderOrder = 0;
 scene.add(grid);
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
-let selectionMaterial = mesh.material.clone();
+let selectionMaterial = frontMaterial.clone();
 selectionMaterial.color.set(0xffd000);
+
+let elements = []
 let updateInteraction=(event)=>{
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
   // calculate objects intersecting the picking ray
-  var intersects = raycaster.intersectObjects([mesh, mesh2]); // scene.children );
+  var intersects = raycaster.intersectObjects(elements); // scene.children );
   scene.traverse(e => {
     if (!(e.isMesh && e.material.color)) return;
     if (!e.userData.saveMaterial) e.userData.saveMaterial = e.material;
@@ -104,3 +99,16 @@ renderer.setAnimationLoop(() => {
   ocontrols.update();
   renderer.render(scene, camera);
 });
+/*
+const mesh = new THREE.Mesh(geometry, backMaterial);
+mesh.add(new THREE.Mesh(geometry,frontMaterial));
+mesh.children[0].renderOrder = 2;
+scene.add(mesh);
+mesh.position.set(-.25,.5,-.25)
+const mesh2 = mesh.clone();
+scene.add(mesh2);
+mesh2.position.set(.25,1.,.25)
+elements = [mesh, mesh2]
+*/
+elements = new FCAD().eval(`
+`).elements
