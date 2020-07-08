@@ -127,15 +127,16 @@ let updateInteraction = event => {
     }
   };
   if (event.type === "mousedown") {
+    if(wasDragged)return;
     if (intersects.length) {
       let o = intersects[0].object;
       if(!o.userData.selected){
         select(o)
       }
-    } else select();
+    } else if(!wasDragged)select();
   }
   
-  tcontrol.enabled = selection.length ? true : false
+  tcontrol.enabled = tcontrol.visible = selection.length ? true : false
   
 };
 
