@@ -2,9 +2,8 @@ import * as THREE from "https://threejs.org/build/three.module.js";
 
 import CSG from "./three-csg.js";
 
-class FNode extends CSG {
+class FNode{
   constructor(fcad, type) {
-    super();
     this.fcad = fcad;
     this.type = type;
     this._size = new THREE.Vector3(1, 1, 1);
@@ -29,10 +28,10 @@ class FNode extends CSG {
     return this;
   }
   get mesh() {
-    return CSG.toMesh(this,this.src.matrix);
+    return CSG.toMesh(this.csg,this.src.matrix,this.src.material);
   }
   set mesh(src) {
-    this._mesh = this.fromMesh(this.src = src);
+    this.csg = CSG.fromMesh(this.src = src);
     return this;
   }
 }
@@ -69,6 +68,15 @@ class FCAD {
     let invert = a => {
       return this;
     };
+    
+    
+    let material = new THREE.MeshStandardMaterial({color:'blue'})
+    let prims = {
+      sphere:new THREE.Mesh(new THREE.SphereGeometry(1,8,8),material),
+      box:new THREE.Mesh(new THREE.BoxGeometry(1,8,8),material),
+      sphere:new THREE.Mesh(new THREE.CylinderGeometry(1,1,8,8),material),
+    }
+    
     let self = this;
     function render  () {
       
@@ -77,7 +85,12 @@ class FCAD {
         scene.remove(scene.children[0])
       self.elements.length = 0;
       for(let e=arguments,i=0;i<e.length;i++){
-        let m = e[i].mesh;
+        //debugger
+        let el = e[i]
+        let t = el.type;
+        if(prims[t])
+          el.mesh = prims[t].clone()
+        let m = el.mesh;
         self.elements.push(m)
         scene.add(m)
       }
@@ -97,7 +110,7 @@ class FCAD {
     
     
     //this.eval(f);
-  debugger
+  //debugger
     render(sphere().size(1,1,1),box().size(1,1,1).position(.5,.5,.5))
   
   }

@@ -46,7 +46,7 @@ outgoingLight.rgb = outgoingLight.brg;
 #endif
 #ifdef TRANSPARENCY
 diffuseColor.a`)
-        console.log(shader.fragmentShader)
+        //console.log(shader.fragmentShader)
       }
       return template
     }else
