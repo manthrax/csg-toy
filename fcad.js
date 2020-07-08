@@ -13,26 +13,27 @@ class FNode extends CSG {
     this._rotation = new THREE.Euler(0, 0, 0, "XYZ");
   }
   size(x, y, z) {
-    this.size.set(x, y, z);
+    this._size.set(x, y, z);
     return this;
   }
   scale(x, y, z) {
-    this.scale.set(x, y, z);
+    this._scale.set(x, y, z);
     return this;
   }
   position(x, y, z) {
-    this.position.set(x, y, z);
+    this._position.set(x, y, z);
     return this;
   }
   rotation(x, y, z, order=this.rotation.order) {
-    this.rotation.set(x, y, z, order);
+    this._rotation.set(x, y, z, order);
     return this;
   }
   get mesh() {
-    return CSG.fromMesh(this.src);
+    return this.toMesh();
   }
   set mesh(src) {
-    this.src = src;
+    this._mesh = this.fromMesh(this.src = src);
+    return this;
   }
 }
 
@@ -72,7 +73,7 @@ class FCAD {
       while(scene.children.length)scene.remove(scene.children[0])
       this.elements.length = 0;
       for(let e=arguments,i=0;i<e.length;i++){
-        let m =e[i].toMesh();
+        let m = e[i].mesh;
         this.elements.push(m)
         scene.add(m)
       }
@@ -86,6 +87,7 @@ class FCAD {
       return this;
     };
     let f = `
+      debugger
       render(sphere().size(1,1,1),box().size(1,1,1).position(.5,.5,.5))
     `;
     this.eval(f);
