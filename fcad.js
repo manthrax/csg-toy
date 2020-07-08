@@ -2,6 +2,8 @@ import * as THREE from "https://threejs.org/build/three.module.js";
 
 import CSG from "./three-csg.js";
 
+import { ConvexBufferGeometry } from 'https://threejs.org/examples/jsm/geometries/ConvexGeometry.js';
+
 const backMaterial = new THREE.MeshStandardMaterial({
   color: "red",
   opacity: 0.5,
@@ -79,6 +81,10 @@ class FCAD {
       cylinder: mkprim(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16))
     };
 
+    /*
+    var mesh = new THREE.Mesh( new THREE.ConvexBufferGeometry(points ));
+    */
+    
     let self = this;
     function render() {
       while (scene.children.length) scene.remove(scene.children[0]);
@@ -109,16 +115,19 @@ class FCAD {
     };
     let f = `
       //debugger
-      render(sphere().size(1,1,1).position(10,10,10),box().size(1,1,1).position(2.5,.5,.5))
+let s = sphere().size(1,1,1).position(10,10,10)
+let b = box().size(1,1,1).position(2.5,.5,.5)
+      render(b,s)
     `;
 
     //this.eval(f);
-    //debugger
+    debugger
     render(
-      sphere().size(1, 1, 1),
+      sphere().size(1, 1, 1)
+        .position(5.5, 5.5, 5.5),
       box()
         .size(1, 1, 1)
-        .position(1.5, 1.5, 1.5),
+        .position(5.5, 5.5, 5.5),
       cylinder()
     );
   }
