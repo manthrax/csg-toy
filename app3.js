@@ -59,6 +59,8 @@ var mouse = new THREE.Vector2();
 let selectionMaterial = frontMaterial.clone();
 selectionMaterial.color.set(0xffd000);
 
+let transformGroup = new THREE.Group()
+tcontrol.attach(transformGroup)
 let elements = []
 let updateInteraction=(event)=>{
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -66,24 +68,44 @@ let updateInteraction=(event)=>{
   raycaster.setFromCamera(mouse, camera);
   // calculate objects intersecting the picking ray
   var intersects = raycaster.intersectObjects(elements); // scene.children );
-  scene.traverse(e => {
-    if (!(e.isMesh && e.material.color)) return;
-    if (!e.userData.saveMaterial) e.userData.saveMaterial = e.material;
-    e.material = e.userData.saveMaterial;
-  });
+
+  let setMaterial=(m,mat)=>{
+    if (!m.userData.saveMaterial) m.userData.saveMaterial = m.material;
+    m.material = mat;
+  }
   for (var i = 0; i < intersects.length; i++) {
     let o = intersects[i].object;
     if(wasDragged) break;
     wasDragged = false;
     if (event.type==='mousedown') {
-      o.material = selectionMaterial;
+      /*
       if(!event.shiftKey){
-        for (var j = 0; j < selection.length; j++)
-          selection[j] != o && tcontrol.detach(selection[j]);
-        selection = []
+        for (var j = 0; j < selection.length; j++){
+          if(selection[j] != o){
+            transformGroup.detach(selection[j]);
+            selection[j].material = selection[j].userData.saveMaterial
+            delete selection[j].userData.selected
+          }
+        }
+      }*/
+      
+      for (var j = 0; j < selection.length; j++){
+        scene.attach(selection[j]);
       }
-      selection.push(o);
-      for (var j = 0; j < selection.length; j++) tcontrol.attach(selection[j]);
+      if(!o.userData.selected){
+        selection.push(o);
+        o.userData.selected = true;
+        setMaterial(o,selectionMaterial)
+      }
+      transformGroup.position.set(0,0,0)
+      for (var j = 0; j < selection.length; j++){
+        transformGroup.position.add(selection[j].position)
+      }
+      if(selection.length)transformGroup.position.multiplyScalar(1/selection.length)
+      
+      for (var j = 0; j < selection.length; j++)
+        transformGroup.attach(selection[j]);
+      
     }
     break;
   }
