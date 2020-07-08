@@ -18,8 +18,8 @@ const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 mesh.position.y += 0.5;
 
-const mesh2 = mesh.clone()
-scene.add(mesh2)
+const mesh2 = mesh.clone();
+scene.add(mesh2);
 
 const light = new THREE.PointLight("white", 0.5);
 light.position.set(20, 30, 40);
@@ -35,7 +35,7 @@ tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
   if (!event.value) {
     tbox.setFromObject(mesh);
-    if (tbox.min.y < 0) mesh.position.y -= tbox.min.y
+    if (tbox.min.y < 0) mesh.position.y -= tbox.min.y;
   }
 });
 let grid = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new GridMaterial());
@@ -44,24 +44,27 @@ scene.add(grid);
 
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
-function onMouseMove( event ) {
-	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;  
-	raycaster.setFromCamera( mouse, camera );
-	// calculate objects intersecting the picking ray
-	var intersects = raycaster.intersectObjects( [mesh] );// scene.children );
-	scene.traverse((e)=>{
-    if(!(e.isMesh && e.material.color))return;
-    if(!e.material.userData.saveColor)e.material.userData.saveColor=e.material.color.clone()
-    else e.material.color.copy(e.material.userData.saveColor);
-  })
-  for ( var i = 0; i < intersects.length; i++ ) {  
-		intersects[ i ].object.material.color.set( 0xff0000 );
-	}
+
+let selectionMaterial = mesh.material.clone();
+selectionMaterial.color.set(0xffd000);
+function onMouseMove(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  // calculate objects intersecting the picking ray
+  var intersects = raycaster.intersectObjects([mesh, mesh2]); // scene.children );
+  scene.traverse(e => {
+    if (!(e.isMesh && e.material.color))
+        return;
+    if (!e.material.userData.saveMaterial)
+      e.material.userData.saveMaterial = e.material;
+    e.material = e.material.userData.saveMaterial;
+  });
+  for (var i = 0; i < intersects.length; i++) {
+    intersects[i].object.material = selectionMaterial;
+  }
 }
-window.addEventListener( 'mousemove', onMouseMove, false );
-
-
+window.addEventListener("mousemove", onMouseMove, false);
 
 let resizeFn = event => {
   let width = window.innerWidth;
