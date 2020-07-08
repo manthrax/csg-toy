@@ -110,5 +110,7 @@ scene.add(mesh2);
 mesh2.position.set(.25,1.,.25)
 elements = [mesh, mesh2]
 */
-elements = new FCAD().eval(`
+
+let fc = new FCAD(scene)
+elements = fc.eval(`
 `).elements
