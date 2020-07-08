@@ -49,7 +49,8 @@ let grid = new THREE.Mesh(new THREE.PlaneGeometry(10.0015, 10.0015), new GridMat
   map:new THREE.TextureLoader().load('https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fmandala.jpg?v=1594201375330'),
   transparent:true,
   opacity:1.,
-  depthWrite:false,
+  alphaTest:.5,
+  depthWrite:true,
   side:THREE.DoubleSide})));
 grid.rotation.x = Math.PI * -0.5;
 grid.renderOrder = 0;
@@ -74,26 +75,23 @@ let updateInteraction=(event)=>{
     if (!m.userData.saveMaterial) m.userData.saveMaterial = m.material;
     m.material = mat;
   }
-  for (var i = 0; i < intersects.length; i++) {
-    let o = intersects[i].object;
-    if(wasDragged) break;
-    wasDragged = false;
-    if (event.type==='mousedown') {
-      /*
-      if(!event.shiftKey){
-        for (var j = 0; j < selection.length; j++){
-          if(selection[j] != o){
-            transformGroup.detach(selection[j]);
-            selection[j].material = selection[j].userData.saveMaterial
-            delete selection[j].userData.selected
-          }
-        }
-      }*/
-      
+  let select=(o)=>{
+    
       for (var j = 0; j < selection.length; j++){
         scene.attach(selection[j]);
       }
-      if(!o.userData.selected){
+      if(!event.shiftKey){
+        let nsel = []
+        for (var j = 0; j < selection.length; j++){
+          if(selection[j] != o){
+            selection[j].material = selection[j].userData.saveMaterial
+            delete selection[j].userData.selected
+          }else nsel.push(selection[j])
+        }
+        selection = nsel
+      }
+      
+      if(o&&!o.userData.selected){
         selection.push(o);
         o.userData.selected = true;
         setMaterial(o,selectionMaterial)
@@ -102,14 +100,23 @@ let updateInteraction=(event)=>{
       for (var j = 0; j < selection.length; j++){
         transformGroup.position.add(selection[j].position)
       }
-      if(selection.length)transformGroup.position.multiplyScalar(1/selection.length)
-      
-      for (var j = 0; j < selection.length; j++)
-        transformGroup.attach(selection[j]);
+      if(selection.length){
+        transformGroup.position.multiplyScalar(1/selection.length)
+        for (var j = 0; j < selection.length; j++)
+          transformGroup.attach(selection[j]);
+      }
+  
+    if (event.type==='mousedown') {
+      if(intersects.length){
+        let o = intersects[0].object;
+        if(wasDragged) break;
+        wasDragged = false;
+        select(o)
+      }else select()
     }
-    break;
   }
 }
+
 window.addEventListener("mousemove", updateInteraction, false);
 window.addEventListener("mousedown", updateInteraction, false);
 let resizeFn = event => {
