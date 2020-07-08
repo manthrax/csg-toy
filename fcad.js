@@ -119,11 +119,11 @@ class FCAD {
       let t= el.type;
       el.csg = new CSG()
       if(t==='union'){
-        if(el.args.length)el.src = el.args[0].mesh
+        if(el.args.length)el.src = el.args[0].getMesh()
         for(let i=0;i<el.args.length;i++){
           el.csg = el.csg.union(el.args[i].csg);
         }
-        el._mesh = el.mesh
+        el._mesh = el.getMesh()
         el._mesh.material = new THREE.MeshStandardMaterial();
       }
     }
