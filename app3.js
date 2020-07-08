@@ -12,29 +12,33 @@ renderer.setClearColor(0x101010);
 document.body.appendChild(renderer.domElement);
 ocontrols = new OrbitControls(camera, renderer.domElement);
 //ocontrols.autoRotate = true;
-const geometry = new THREE.BoxBufferGeometry(1,1,1, 1, 1);
+const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 1, 1);
 const material = new THREE.MeshStandardMaterial();
 const mesh = new THREE.Mesh(geometry, material);
 scene.add(mesh);
 mesh.position.y += 0.5;
+
+const mesh2 = mesh.clone()
+scene.add(mesh2)
+
 const light = new THREE.PointLight("white", 0.5);
 light.position.set(20, 30, 40);
 scene.add(light);
 const light1 = new THREE.PointLight("white", 0.5);
 light1.position.set(-20, 30, -40);
 scene.add(light1);
-
-let tcontrol = new TransformControls( camera, renderer.domElement );
-tcontrol.attach( mesh );
-scene.add(tcontrol)
-
-tcontrol.addEventListener( 'dragging-changed', event =>{  
- ocontrols.enabled = ! event.value
-  if(!event.value){
-    
+let tcontrol = new TransformControls(camera, renderer.domElement);
+tcontrol.attach(mesh);
+scene.add(tcontrol);
+let tbox = new THREE.Box3();
+tcontrol.addEventListener("dragging-changed", event => {
+  ocontrols.enabled = !event.value;
+  if (!event.value) {
+    tbox.setFromObject(mesh);
+    if (tbox.min.y < 0) mesh.position.y -= tbox.min.y
   }
-);
-let grid = new THREE.Mesh(new THREE.PlaneGeometry(10, 10),new GridMaterial());
+});
+let grid = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new GridMaterial());
 grid.rotation.x = Math.PI * -0.5;
 scene.add(grid);
 
