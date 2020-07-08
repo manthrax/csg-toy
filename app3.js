@@ -61,7 +61,6 @@ var mouse = new THREE.Vector2();
 let selectionMaterial = mesh.material.clone();
 selectionMaterial.color.set(0xffd000);
 
-
 let updateInteraction=(event)=>{
   
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -81,7 +80,8 @@ let updateInteraction=(event)=>{
       o.material = selectionMaterial;
       for (var j = 0; j < selection.length; j++)
         selection[j] != o && tcontrol.detach(selection[j]);
-      selection = [intersects[i].object];
+      if(!event.shiftKey)selection = []
+      selection.push(intersects[i].object);
       for (var j = 0; j < selection.length; j++) tcontrol.attach(selection[j]);
     }
     break;
