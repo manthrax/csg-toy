@@ -44,12 +44,14 @@ let enforceGround=(mesh)=>{
 
 
 let selection = [];
+let wasDragged = false;
 tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
+  wasDragged = event.
   if (!event.value) {
     for(let i=0;i<selection.length;i++)
       enforceGround(selection[i])
-  }
+  }else wasDragged = true
 });
 let grid = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new GridMaterial());
 grid.rotation.x = Math.PI * -0.5;
@@ -76,6 +78,8 @@ let updateInteraction=(event)=>{
 
   for (var i = 0; i < intersects.length; i++) {
     let o = intersects[i].object;
+    if(wasDragged) break;
+    wasDragged = false;
     if (event.type==='mousedown') {
       o.material = selectionMaterial;
       for (var j = 0; j < selection.length; j++)
