@@ -26,7 +26,7 @@ const backMaterial = new THREE.MeshStandardMaterial({
 });
 const frontMaterial = new THREE.MeshStandardMaterial({
   color: "white",
-  opacity: 0.9,
+  opacity: 0.1,
   transparent: true,
   side: THREE.FrontSide
 });
@@ -54,6 +54,7 @@ tcontrol.addEventListener("dragging-changed", event => {
   if (!wasDragged) {
     for (let i = 0; i < selection.length; i++) enforceGround(selection[i]);
   }
+  //debugger
 });
 let grid = new THREE.Mesh(
   new THREE.PlaneGeometry(10.0015, 10.0015),
@@ -65,7 +66,7 @@ let grid = new THREE.Mesh(
       transparent: true,
       opacity: 1,
       alphaTest: 0.5,
-      depthWrite: true,
+      depthWrite: false,
       side: THREE.DoubleSide
     })
   )
@@ -128,12 +129,14 @@ let updateInteraction = event => {
   if (event.type === "mousedown") {
     if (intersects.length) {
       let o = intersects[0].object;
-      if (!wasDragged) {
-        wasDragged = true;
-        select(o);
+      if(!o.userData.selected){
+        select(o)
       }
     } else select();
   }
+  
+  tcontrol.enabled = selection.length ? true : false
+  
 };
 
 window.addEventListener("mousemove", updateInteraction, false);
