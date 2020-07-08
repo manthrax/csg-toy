@@ -129,7 +129,7 @@ let updateInteraction = event => {
   if (event.type === "mousedown") {
     if(wasDragged)return;
     if (intersects.length) {
-      debugger
+     // debugger
       let o = intersects[0].object;
       if(!o.userData.selected){
         select(o)
