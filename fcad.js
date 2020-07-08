@@ -119,7 +119,7 @@ class FCAD {
       let t= el.type;
       el.csg = new CSG()
       if(t==='union'){
-        debugger
+        //debugger
         if(el.args.length)el.src = el.args[0].getMesh()
         for(let i=0;i<el.args.length;i++){
           el.csg = el.csg.union(el.args[i].csg);
@@ -173,7 +173,9 @@ let u = union(b,s,c)
 let b = box().size(1,1,1).position(.15, 0.25, .25)
 let c = cylinder().size(1,1,1).position(.15, 0.25, -.35)
 let u = union(b,s,c)
-      render(b,s,c,u)
+
+this.update = ()=>{return render(b,s,c,u).elements}
+this.update()
     
     /*    render(
       sphere().size(1, 1, 1)

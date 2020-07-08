@@ -48,11 +48,18 @@ let enforceGround = mesh => {
 };
 let selection = [];
 let wasDragged = false;
+
+
+let fc;
+
+
 tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
   wasDragged = event.value;
   if (!wasDragged) {
     for (let i = 0; i < selection.length; i++) enforceGround(selection[i]);
+  }else{
+    fc.update()
   }
   //debugger
 });
@@ -83,6 +90,14 @@ let transformGroup = new THREE.Group();
 scene.add(transformGroup);
 tcontrol.attach(transformGroup);
 let elements = [];
+
+
+let cadScene = new THREE.Group();
+scene.add(cadScene);
+fc = new FCAD(cadScene);
+efc.update();
+
+
 let updateInteraction = event => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -174,10 +189,7 @@ mesh2.position.set(.25,1.,.25)
 elements = [mesh, mesh2]
 */
 
-let cadScene = new THREE.Group();
-scene.add(cadScene);
-let fc = new FCAD(cadScene);
-elements = fc.eval(`
-`).elements;
+//elements = fc.eval(`
+//`).elements;
 
 for (let i = 0; i < elements.length; i++) enforceGround(elements[i]);
