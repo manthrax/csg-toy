@@ -15,6 +15,7 @@ void main() {
   vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
   float line = min(grid.x, grid.y);
   float val =  1.0 - min(line, 1.0);
+  if(val<.5)discard;
   gl_FragColor = vec4(color.xyz, color.w*val);// Just visualize the grid lines directly
 }
 `;

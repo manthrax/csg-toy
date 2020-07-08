@@ -13,9 +13,13 @@ document.body.appendChild(renderer.domElement);
 ocontrols = new OrbitControls(camera, renderer.domElement);
 //ocontrols.autoRotate = true;
 const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 1, 1);
-const material = new THREE.MeshStandardMaterial();
-const mesh = new THREE.Mesh(geometry, material);
+const backMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.5,transparent:true,side:THREE.BackSide,depthWrite:false});
+const frontMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.5,transparent:true,side:THREE.FrontSide});
+const mesh = new THREE.Mesh(geometry, backMaterial);
+mesh.add(new THREE.Mesh(geometry,frontMaterial));
+mesh.children[0].renderOrder = 2;
 scene.add(mesh);
+
 mesh.position.y += 0.5;
 
 const mesh2 = mesh.clone();
@@ -30,11 +34,21 @@ scene.add(light1);
 let tcontrol = new TransformControls(camera, renderer.domElement);
 scene.add(tcontrol);
 let tbox = new THREE.Box3();
+
+
+let enforceGround=(mesh)=>{
+  
+    tbox.setFromObject(mesh);
+    if (tbox.min.y < 0) mesh.position.y -= tbox.min.y;
+}
+
+
+let selection = [];
 tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
   if (!event.value) {
-    tbox.setFromObject(mesh);
-    if (tbox.min.y < 0) mesh.position.y -= tbox.min.y;
+    for(let i=0;i<selection.length;i++)
+      enforceGround(selection[i])
   }
 });
 let grid = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new GridMaterial());
@@ -48,7 +62,6 @@ let selectionMaterial = mesh.material.clone();
 selectionMaterial.color.set(0xffd000);
 
 
-let selection = [];
 let updateInteraction=(event)=>{
   
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
