@@ -94,15 +94,15 @@ class FCAD {
         let t = el.type;
         if (prims[t]) {
           el.mesh = prims[t].clone(true);
-          //debugger
-          el.mesh.position.copy(el._position);
-          el._position = el.mesh.position
-          el.mesh.scale.copy(el._scale);
-          el._scale = el.mesh.scale
-          el.mesh.rotation.copy(el._rotation);
-          el._rotation = el.mesh.rotation
+          let mesh = el._mesh = el.mesh
+          mesh.position.copy(el._position);
+          el._position = mesh.position
+          mesh.scale.copy(el._scale);
+          el._scale = mesh.scale
+          mesh.rotation.copy(el._rotation);
+          el._rotation = mesh.rotation
         }
-        let m = el.mesh;
+        let m = el._mesh;
         self.elements.push(m);
         scene.add(m);
       }
@@ -114,22 +114,22 @@ class FCAD {
       return this;
     };
     let f = `
-      //debugger
-let s = sphere().size(1,1,1).position(10,10,10)
-let b = box().size(1,1,1).position(2.5,.5,.5)
-      render(b,s)
+let s = sphere().size(1,1,1).position(.15, 0.5, -.15)
+let b = box().size(1,1,1).position(.15, 0.5, .15)
+let c = cylinder().size(1,1,1).position(.15, 0.5, .15)
+      render(b,s,c)
     `;
 
-    //this.eval(f);
-    debugger
-    render(
+    this.eval(f);
+/*    render(
       sphere().size(1, 1, 1)
-        .position(5.5, 5.5, 5.5),
+        .position(.15, 0.5, -.15),
       box()
         .size(1, 1, 1)
-        .position(5.5, 5.5, 5.5),
+        .position(.15, .5, .15),
       cylinder()
     );
+*/
   }
 }
 export default FCAD;

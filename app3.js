@@ -77,10 +77,12 @@ let updateInteraction=(event)=>{
     wasDragged = false;
     if (event.type==='mousedown') {
       o.material = selectionMaterial;
-      for (var j = 0; j < selection.length; j++)
-        selection[j] != o && tcontrol.detach(selection[j]);
-      if(!event.shiftKey)selection = []
-      selection.push(intersects[i].object);
+      if(!event.shiftKey){
+        for (var j = 0; j < selection.length; j++)
+          selection[j] != o && tcontrol.detach(selection[j]);
+        selection = []
+      }
+      selection.push(o);
       for (var j = 0; j < selection.length; j++) tcontrol.attach(selection[j]);
     }
     break;
