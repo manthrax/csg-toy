@@ -28,7 +28,12 @@ class FNode{
     return this;
   }
   get mesh() {
-    return CSG.toMesh(this.csg,this.src.matrix,this.src.material);
+    let m = CSG.toMesh(this.csg,this.src.matrix,this.src.material);
+    m.renderOrder = 2;
+    let b = new THREE.Mesh(m.geometry,backMaterial)
+    m.add(b)
+    b.renderOrder =1;
+    return m
   }
   set mesh(src) {
     this.csg = CSG.fromMesh(this.src = src);
@@ -70,16 +75,15 @@ class FCAD {
     };
     
     
-const backMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.9,transparent:true,side:THREE.BackSide,depthWrite:false});
-const frontMaterial = new THREE.MeshStandardMaterial({color:'white',opacity:.9,transparent:true,side:THREE.FrontSide});
+const frontMaterial = new THREE.MeshStandardMaterial({color:'blue',opacity:.25,transparent:true,side:THREE.FrontSide});
 let mkprim = (geom)=>{
-  
+  let m = new THREE.Mesh(geom,frontMaterial)
+  return m;
 }
-    let material = new THREE.MeshStandardMaterial({color:'blue'})
     let prims = {
-      sphere:new THREE.Mesh(new THREE.SphereGeometry(.25,8,8),material),
-      box:new THREE.Mesh(new THREE.BoxGeometry(.5,.5,.5),material),
-      cylinder:new THREE.Mesh(new THREE.CylinderGeometry(.25,.25,.5,16),material),
+      sphere:mkprim(new THREE.SphereGeometry(.25,8,8)),
+      box:mkprim(new THREE.BoxGeometry(.5,.5,.5)),
+      cylinder:mkprim(new THREE.CylinderGeometry(.25,.25,.5,16)),
     }
     
     let self = this;
@@ -92,7 +96,7 @@ let mkprim = (geom)=>{
         let el = e[i]
         let t = el.type;
         if(prims[t])
-          el.mesh = prims[t].clone()
+          el.mesh = prims[t].clone(true)
         let m = el.mesh;
         self.elements.push(m)
         scene.add(m)
