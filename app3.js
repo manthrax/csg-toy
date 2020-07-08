@@ -19,7 +19,6 @@ const mesh = new THREE.Mesh(geometry, backMaterial);
 mesh.add(new THREE.Mesh(geometry,frontMaterial));
 mesh.children[0].renderOrder = 2;
 scene.add(mesh);
-
 mesh.position.y += 0.5;
 
 const mesh2 = mesh.clone();
@@ -34,24 +33,19 @@ scene.add(light1);
 let tcontrol = new TransformControls(camera, renderer.domElement);
 scene.add(tcontrol);
 let tbox = new THREE.Box3();
-
-
-let enforceGround=(mesh)=>{
-  
+let enforceGround=(mesh)=>{ 
     tbox.setFromObject(mesh);
     if (tbox.min.y < 0) mesh.position.y -= tbox.min.y;
 }
-
-
 let selection = [];
 let wasDragged = false;
 tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
-  wasDragged = event.
-  if (!event.value) {
+  wasDragged = event.value
+  if (!wasDragged) {
     for(let i=0;i<selection.length;i++)
       enforceGround(selection[i])
-  }else wasDragged = true
+  }
 });
 let grid = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new GridMaterial());
 grid.rotation.x = Math.PI * -0.5;
@@ -96,10 +90,11 @@ let clicked = false;
 function onMouseDown(event) {
   updateInteraction(event)
 }
+
 function onMouseMove(event) {
   updateInteraction(event)
 }
-//debugger
+
 window.addEventListener("mousemove", onMouseMove, false);
 window.addEventListener("mousedown", onMouseDown, false);
 
