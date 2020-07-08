@@ -66,7 +66,7 @@ let grid = new THREE.Mesh(
       transparent: true,
       opacity: 1,
       alphaTest: 0.5,
-      depthWrite: false,
+      depthWrite: true,
       side: THREE.DoubleSide
     })
   )
@@ -139,6 +139,11 @@ let updateInteraction = event => {
   tcontrol.enabled = tcontrol.visible = selection.length ? true : false
   
 };
+window.addEventListener("keydown", (e)=>{
+  if(e.shiftKey)tcontrol.setMode( "translate" )
+  if(e.ctrlKey)tcontrol.setMode( "rotate" )
+  if(e.altKey)tcontrol.setMode( "scale" )    
+}, false);
 
 window.addEventListener("mousemove", updateInteraction, false);
 window.addEventListener("mousedown", updateInteraction, false);
