@@ -46,7 +46,7 @@ tcontrol.addEventListener("dragging-changed", event => {
       enforceGround(selection[i])
   }
 });
-let grid = new THREE.Mesh(new THREE.PlaneGeometry(10.0015, 10.0015), new GridMaterial(new THREE.MeshStandardMaterial()));
+let grid = new THREE.Mesh(new THREE.PlaneGeometry(10.0015, 10.0015), new GridMaterial(new THREE.MeshStandardMaterial({transparent:true,opacity:.5,side:THREE.DoubleSide})));
 grid.rotation.x = Math.PI * -0.5;
 scene.add(grid);
 var raycaster = new THREE.Raycaster();
