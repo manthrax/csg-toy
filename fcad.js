@@ -50,6 +50,7 @@ class FCAD {
     }
 
     let recompute=()=>{
+      debugger
       return this
     }
     
@@ -57,11 +58,13 @@ class FCAD {
       return this;
     }
     this.eval = feval
+
+    let f=`
+    recompute(union(sphere(),box()))
+    `
+    this.eval(f)
   }
 
 }
 export default FCAD;
 
-`
-  union(sphere(),box())
-`
