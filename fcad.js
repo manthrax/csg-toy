@@ -1,8 +1,9 @@
 import * as THREE from "https://threejs.org/build/three.module.js";
 
-class FNode{
-  constructor(fcad,srcMesh){
-    this.src=srcMesh;
+import CSG from "./three-csg.js";
+
+class FNode extends CSG{
+  constructor(fcad){
     this.fcad = fcad;
     this.size = new THREE.Vector3(1,1,1)
     this.scale = new THREE.Vector3(1,1,1)
@@ -25,6 +26,12 @@ class FNode{
     this.rotation.set(x,y,z)
     return this;
   }
+  get mesh(){
+    return CSG.fromMesh(this.src)
+  }
+  set mesh(src){
+    this.src=src;
+  }
 }
 
 class FCAD {
@@ -32,17 +39,16 @@ class FCAD {
     this.scene = scene;
     this.elements=[]
     let vec3=(x,y,z)=>new THREE.Vector3(x,y,z)
-
     let sphere=()=>{
-      let fn = new FNode(this)
+      let fn = new FNode(this,'sphere')
       return fn;
     }
     let box=()=>{      
-      let fn = new FNode(this)
+      let fn = new FNode(this,'box')
       return fn;
     }
-    let cylinder=()=>{      
-      let fn = new FNode(this)
+    let cylinder=()=>{
+      let fn = new FNode(this,'cylinder')
       return fn;
     }
     let hull=(a)=>{
@@ -60,23 +66,19 @@ class FCAD {
     let invert=(a)=>{
       return this;
     }
-
     let recompute=()=>{
       debugger
       return this
     }
-    
     let feval=(str)=>{
       return this;
     }
     this.eval = feval
-
     let f=`
-    recompute(union(sphere(),box()))
+    scene.add(union(sphere(),box()))
     `
     this.eval(f)
   }
-
 }
 export default FCAD;
 

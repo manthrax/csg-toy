@@ -111,7 +111,8 @@ scene.add(mesh2);
 mesh2.position.set(.25,1.,.25)
 elements = [mesh, mesh2]
 */
-
-let fc = new FCAD(scene)
+let cadScene = new THREE.Scene()
+scene.add(cadScene)
+let fc = new FCAD(cadScene)
 elements = fc.eval(`
 `).elements
