@@ -24,6 +24,7 @@ scene.add(mesh);
 mesh.position.y += 0.5;
 const mesh2 = mesh.clone();
 scene.add(mesh2);
+mesh2.
 const light = new THREE.PointLight("white", 0.5);
 light.position.set(20, 30, 40);
 scene.add(light);
