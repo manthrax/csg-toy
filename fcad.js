@@ -25,7 +25,21 @@ class FNode {
     this._scale = new THREE.Vector3(1, 1, 1);
     this._position = new THREE.Vector3(0, 0, 0);
     this._rotation = new THREE.Euler(0, 0, 0, "XYZ");
+    this.children = []
   }
+  remove(child){
+    for(let i=0;i<this.children.length;i++)if(this.children[i]===child){
+      this.children=this.children.splice(i,1)
+      delete child.parent
+      break;
+    }
+  }
+  add(child){
+    if(child.parent)child.parent.remove(child)
+    this.children.push(child)
+    child.parent = this;
+  }
+  
   size(x, y, z) {
     this._size.set(x, y, z);
     return this;
@@ -87,6 +101,10 @@ class FCAD {
     */
     
     let self = this;
+    let doOp=(t,params)=>{
+      
+    }
+    
     function render() {
       while (scene.children.length) scene.remove(scene.children[0]);
       self.elements.length = 0;
@@ -103,6 +121,7 @@ class FCAD {
           mesh.rotation.copy(el._rotation);
           el._rotation = mesh.rotation
         }
+        else doOp(t)
         let m = el._mesh;
         self.elements.push(m);
         scene.add(m);
@@ -115,10 +134,10 @@ class FCAD {
       return this;
     };
     let f = `
-let s = sphere().size(1,1,1).position(.15, 0.5, -.15)
-let b = box().size(1,1,1).position(.15, 0.5, .15)
-let c = cylinder().size(1,1,1).position(.15, 0.5, .15)
-      render(union(b,s,c))
+let s = sphere().size(1,1,1).position(.15, 0.25, -.15)
+let b = box().size(1,1,1).position(.15, 0.25, .25)
+let c = cylinder().size(1,1,1).position(.15, 0.25, -.35)
+      render(b,s,c)
     `;
 
     this.eval(f);
