@@ -29,7 +29,7 @@ class FNode extends CSG {
     return this;
   }
   get mesh() {
-    return this.toMesh();
+    return CSG.toMesh(this,this.src.matrix);
   }
   set mesh(src) {
     this._mesh = this.fromMesh(this.src = src);
@@ -69,16 +69,20 @@ class FCAD {
     let invert = a => {
       return this;
     };
-    let render = () => {
-      while(scene.children.length)scene.remove(scene.children[0])
-      this.elements.length = 0;
+    let self = this;
+    function render  () {
+      
+      
+      while(scene.children.length)
+        scene.remove(scene.children[0])
+      self.elements.length = 0;
       for(let e=arguments,i=0;i<e.length;i++){
         let m = e[i].mesh;
-        this.elements.push(m)
+        self.elements.push(m)
         scene.add(m)
       }
-      return this;
-    };
+      return self;
+    }
     
     
     
@@ -87,10 +91,15 @@ class FCAD {
       return this;
     };
     let f = `
-      debugger
+      //debugger
       render(sphere().size(1,1,1),box().size(1,1,1).position(.5,.5,.5))
     `;
-    this.eval(f);
+    
+    
+    //this.eval(f);
+  debugger
+    render(sphere().size(1,1,1),box().size(1,1,1).position(.5,.5,.5))
+  
   }
 }
 export default FCAD;
