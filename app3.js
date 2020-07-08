@@ -42,6 +42,11 @@ let grid = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new GridMaterial());
 grid.rotation.x = Math.PI * -0.5;
 scene.add(grid);
 
+
+	var raycaster = new THREE.Raycaster();
+  var allIntersections = raycaster.intersectObject( mesh, true );
+
+
 let resizeFn = event => {
   let width = window.innerWidth;
   let height = window.innerHeight;
