@@ -14,7 +14,7 @@ float gridVal;
   vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
   float line = min(grid.x, grid.y);
   gridVal =  1.0 - min(line, 1.0);
-  if(gridVal<.001)discard;
+  if(gridVal<.001)gridVal=0.;//discard;
 }
 `
 let fs = `
@@ -40,7 +40,9 @@ class GridMaterial{
   //varying vec2 vUv;
   //outgoingLight.rgb=vec3(1.,0.,0.);
   ${gridValFrag}
-  //diffuseColor.a *= gridVal;
+  diffuseColor.a *= gridVal;
+//outgoingLight.rgb = vec3(1.)-outgoingLight.rgb;
+outgoingLight.rgb = outgoingLight.brg;
 #endif
 #ifdef TRANSPARENCY
 diffuseColor.a`)
