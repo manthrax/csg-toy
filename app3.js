@@ -66,7 +66,7 @@ let grid = new THREE.Mesh(
       transparent: true,
       opacity: 1,
       alphaTest: 0.5,
-      depthWrite: true,
+      depthWrite: false,
       side: THREE.DoubleSide
     })
   )

@@ -64,12 +64,13 @@ class FCAD {
     let sphere = () => new FNode(this, "sphere");
     let box = () => new FNode(this, "box");
     let cylinder = () => new FNode(this, "cylinder");
-    let mesh = src => new FNode(this, "mesh", arguments.slice[0]);
-    let hull = a => new FNode(this, "hull", arguments.slice[0]);
-    let union = a => new FNode(this, "union", arguments.slice[0]);
-    let subtract = a => new FNode(this, "subtract", arguments.slice[0]);
-    let intersect = a => new FNode(this, "intersect", arguments.slice[0]);
-    let invert = a => new FNode(this, "invert", arguments.slice[0]);
+    let args=()=> Array.prototype.slice.call(arguments)
+    let mesh = src => new FNode(this, "mesh", args());
+    let hull = a => new FNode(this, "hull",  args());
+    let union = a => new FNode(this, "union",  args());
+    let subtract = a => new FNode(this, "subtract",  args());
+    let intersect = a => new FNode(this, "intersect",  args());
+    let invert = a => new FNode(this, "invert",  args());
 
     let mkprim = geom => {
       let m = new THREE.Mesh(geom, frontMaterial);
@@ -117,7 +118,7 @@ class FCAD {
 let s = sphere().size(1,1,1).position(.15, 0.5, -.15)
 let b = box().size(1,1,1).position(.15, 0.5, .15)
 let c = cylinder().size(1,1,1).position(.15, 0.5, .15)
-      render(b,s,c)
+      render(union(b,s,c))
     `;
 
     this.eval(f);
