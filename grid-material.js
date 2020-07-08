@@ -26,13 +26,16 @@ float gridVal;
 }
 `;
 
-class GridMaterial extends THREE.ShaderMaterial {
-  constructor(params) {
-    if(params.src){
-      
-    }
-    //ebugger
-    super({
+class GridMaterial{
+  constructor(template) {
+    template = template.clone();
+    if(template){
+      template.onBeforeCompile = (x,y,z)=>{
+        debugger
+      }
+      return template
+    }else
+      return new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 1.0 },
         resolution: { value: new THREE.Vector2() },
@@ -43,7 +46,7 @@ class GridMaterial extends THREE.ShaderMaterial {
       extensions:{derivatives:true},
       transparent:true,
       side:THREE.DoubleSide
-    });
+    })
   }
 }
 

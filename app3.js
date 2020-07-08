@@ -1,6 +1,7 @@
 import * as THREE from "https://threejs.org/build/three.module.js";
 import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
 import { TransformControls } from "https://threejs.org/examples/jsm/controls/TransformControls.js";
+import { ConvexHull } from "https://threejs.org/examples/jsm/math/ConvexHull.js";
 import GridMaterial from "./grid-material.js";
 let camera, scene, renderer, ocontrols;
 let aspect = window.innerWidth / window.innerHeight;
@@ -45,7 +46,7 @@ tcontrol.addEventListener("dragging-changed", event => {
       enforceGround(selection[i])
   }
 });
-let grid = new THREE.Mesh(new THREE.PlaneGeometry(10.0015, 10.0015), new GridMaterial());
+let grid = new THREE.Mesh(new THREE.PlaneGeometry(10.0015, 10.0015), new GridMaterial(new THREE.MeshStandardMaterial()));
 grid.rotation.x = Math.PI * -0.5;
 scene.add(grid);
 var raycaster = new THREE.Raycaster();
