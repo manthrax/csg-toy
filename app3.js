@@ -59,7 +59,7 @@ tcontrol.addEventListener("dragging-changed", event => {
   if (!wasDragged) {
     for (let i = 0; i < selection.length; i++) enforceGround(selection[i]);
   }else{
-    fc.update()
+    elements = fc.update().slice(0)
   }
   //debugger
 });
@@ -95,7 +95,7 @@ let elements = [];
 let cadScene = new THREE.Group();
 scene.add(cadScene);
 fc = new FCAD(cadScene);
-efc.update();
+elements = fc.update();
 
 
 let updateInteraction = event => {
