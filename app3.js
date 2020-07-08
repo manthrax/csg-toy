@@ -47,39 +47,40 @@ var mouse = new THREE.Vector2();
 let selectionMaterial = mesh.material.clone();
 selectionMaterial.color.set(0xffd000);
 
-let clicked = false;
-function onMouseDown(event) {
-  clicked = true;
-}
 
-let selection = []
-function onMouseMove(event) {
+let selection = [];
+let updateInteraction=(event)=>{
+  
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
   // calculate objects intersecting the picking ray
   var intersects = raycaster.intersectObjects([mesh, mesh2]); // scene.children );
   scene.traverse(e => {
-    if (!(e.isMesh && e.material.color))
-        return;
-    if (!e.userData.saveMaterial)
-      e.userData.saveMaterial = e.material;
+    if (!(e.isMesh && e.material.color)) return;
+    if (!e.userData.saveMaterial) e.userData.saveMaterial = e.material;
     e.material = e.userData.saveMaterial;
   });
 
   for (var i = 0; i < intersects.length; i++) {
-    intersects[i].object.material = selectionMaterial;
-    if(clicked){
-    if(selection.length)
-      for (var j = 0; j < selection.length; j++) tcontrol.detach(selection[j]);
-  //selection=[]
-    selection=[intersects[i].object]
-    clicked = false;
+    let o = intersects[i].object;
+    if (event.type==='mousedown') {
+      o.material = selectionMaterial;
+      for (var j = 0; j < selection.length; j++)
+        selection[j] != o && tcontrol.detach(selection[j]);
+      selection = [intersects[i].object];
+      for (var j = 0; j < selection.length; j++) tcontrol.attach(selection[j]);
     }
     break;
   }
-  if(selection.length)
-    for (var i = 0; i < selection.length; i++) tcontrol.attach(selection[i]);
+}
+
+let clicked = false;
+function onMouseDown(event) {
+  updateInteraction(event)
+}
+function onMouseMove(event) {
+  updateInteraction(event)
 }
 //debugger
 window.addEventListener("mousemove", onMouseMove, false);
