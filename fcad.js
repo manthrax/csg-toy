@@ -75,15 +75,16 @@ class FCAD {
   constructor(scene) {
     this.scene = scene;
     this.elements = [];
+    
+    let self = this;
     let vec3 = (x, y, z) => new THREE.Vector3(x, y, z);
     let sphere = () => new FNode(this, "sphere");
     let box = () => new FNode(this, "box");
     let cylinder = () => new FNode(this, "cylinder");
     
     let args=()=> Array.prototype.slice.call(arguments)
-    
     function nnode(type,args){
-      return new FNode(this, type, Array.prototype.slice.call(args))
+      return new FNode(self, type, Array.prototype.slice.call(args))
     }
     //new FNode(this, "mesh", args());
     let mesh = function(){ return nnode("mesh",arguments);}
@@ -106,22 +107,19 @@ class FCAD {
     /*
     var mesh = new THREE.Mesh( new THREE.ConvexBufferGeometry(points ));
     */
-    
-    let self = this;
     let doOp=(el)=>{
       let t= el.type;
       el.csg = new CSG()
       if(t==='union'){
-        //debugger
         for(let i=0;i<el.args.length;i++){
-          debugger
-          el.csg.union(el.args[i]);
+          el.csg = el.csg.union(el.args[i].csg);
         }
      //   el.csg.union()
       }
     }
     
     function render() {
+      debugger
       while (scene.children.length) scene.remove(scene.children[0]);
       self.elements.length = 0;
       for (let e = arguments, i = 0; i < e.length; i++) {
@@ -149,6 +147,7 @@ class FCAD {
       eval(str);
       return this;
     };
+    /*
     let f = `
 let s = sphere().size(1,1,1).position(.15, 0.25, -.15)
 let b = box().size(1,1,1).position(.15, 0.25, .25)
@@ -158,7 +157,15 @@ let u = union(b,s,c)
     `;
 
     this.eval(f);
-/*    render(
+*/
+   // debugger
+    let s = sphere().size(1,1,1).position(.15, 0.25, -.15)
+let b = box().size(1,1,1).position(.15, 0.25, .25)
+let c = cylinder().size(1,1,1).position(.15, 0.25, -.35)
+let u = union(b,s,c)
+      render(b,s,c,u)
+    
+    /*    render(
       sphere().size(1, 1, 1)
         .position(.15, 0.5, -.15),
       box()
