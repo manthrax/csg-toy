@@ -58,7 +58,6 @@ class FNode {
     return this;
   }
   get mesh() {
-    debugger
     let m = CSG.toMesh(this.csg, this.src.matrix, this.src.material);
     m.renderOrder = 2;
     let b = new THREE.Mesh(m.geometry, backMaterial);
@@ -67,7 +66,6 @@ class FNode {
     return m;
   }
   set mesh(src) {
-    debugger
     this.csg = CSG.fromMesh((this.src = src));
     return this;
   }
