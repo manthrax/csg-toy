@@ -28,7 +28,12 @@ let tcontrol = new TransformControls( camera, renderer.domElement );
 tcontrol.attach( mesh );
 scene.add(tcontrol)
 
-tcontrol.addEventListener( 'dragging-changed', event => ocontrols.enabled = ! event.value);
+tcontrol.addEventListener( 'dragging-changed', event =>{  
+ ocontrols.enabled = ! event.value
+  if(!event.value){
+    
+  }
+);
 let grid = new THREE.Mesh(new THREE.PlaneGeometry(10, 10),new GridMaterial());
 grid.rotation.x = Math.PI * -0.5;
 scene.add(grid);
