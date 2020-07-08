@@ -90,9 +90,11 @@ class FCAD {
           el.mesh = prims[t].clone(true);
           //debugger
           el.mesh.position.copy(el._position);
-          
-          el._scale = el.mesh.scale;
-          el._rotation = el.mesh.rotation;
+          el._position = el.mesh.position
+          el.mesh.scale.copy(el._scale);
+          el._scale = el.mesh.scale
+          el.mesh.rotation.copy(el._rotation);
+          el._rotation = el.mesh.rotation
         }
         let m = el.mesh;
         self.elements.push(m);
@@ -107,7 +109,7 @@ class FCAD {
     };
     let f = `
       //debugger
-      render(sphere().size(1,1,1),box().size(1,1,1).position(.5,.5,.5))
+      render(sphere().size(1,1,1).position(10,10,10),box().size(1,1,1).position(2.5,.5,.5))
     `;
 
     //this.eval(f);
