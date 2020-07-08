@@ -10,7 +10,7 @@ void main() {
 let gridValFrag=`
 float gridVal;
 {
-  vec2 coord = vUv.xy;// Compute anti-aliased world-space grid lines
+  vec2 coord = (vUv.xy-.5)*100.;// Compute anti-aliased world-space grid lines
   vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
   float line = min(grid.x, grid.y);
   gridVal =  1.0 - min(line, 1.0);
@@ -35,10 +35,10 @@ class GridMaterial{
       template.onBeforeCompile = (shader,renderer)=>{
         shader.fragmentShader=shader.fragmentShader.replace(`#ifdef TRANSPARENCY
 		diffuseColor.a`,`
-jj
+
 #if ( defined( USE_UV ) && ! defined( UVS_VERTEX_ONLY ) )
-//	varying vec2 vUv;
-  outgoingLight.rgb=vec3(1.,0.,0.);
+  //varying vec2 vUv;
+  //outgoingLight.rgb=vec3(1.,0.,0.);
   ${gridValFrag}
   diffuseColor.a *= gridVal;
 #endif

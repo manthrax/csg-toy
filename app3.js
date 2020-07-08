@@ -30,6 +30,8 @@ const light1 = new THREE.PointLight("white", 0.5);
 light1.position.set(-20, 30, -40);
 scene.add(light1);
 let tcontrol = new TransformControls(camera, renderer.domElement);
+tcontrol.translationSnap = .1
+tcontrol.rotationSnap
 scene.add(tcontrol);
 let tbox = new THREE.Box3();
 let enforceGround=(mesh)=>{ 
@@ -46,7 +48,11 @@ tcontrol.addEventListener("dragging-changed", event => {
       enforceGround(selection[i])
   }
 });
-let grid = new THREE.Mesh(new THREE.PlaneGeometry(10.0015, 10.0015), new GridMaterial(new THREE.MeshStandardMaterial({transparent:true,opacity:.5,side:THREE.DoubleSide})));
+let grid = new THREE.Mesh(new THREE.PlaneGeometry(10.0015, 10.0015), new GridMaterial(new THREE.MeshStandardMaterial({
+  map:new THREE.TextureLoader().load('https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fmandala.jpg?v=1594201375330'),
+  transparent:true,
+  opacity:1.,
+  side:THREE.DoubleSide})));
 grid.rotation.x = Math.PI * -0.5;
 scene.add(grid);
 var raycaster = new THREE.Raycaster();
