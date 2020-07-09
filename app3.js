@@ -99,8 +99,14 @@ tcontrol.attach(transformGroup);
 let cadScene = new THREE.Group();
 scene.add(cadScene);
 fc = new FCAD(cadScene);
-elements = fc.update();
 
+setElements(e){
+  selection.length = 0;
+  elements.length = 0;
+  
+}
+
+setElements(fc.update());
 
 let updateInteraction = event => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
