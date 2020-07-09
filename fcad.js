@@ -27,7 +27,7 @@ class FNode {
     this._position = new THREE.Vector3(0, 0, 0);
     this._rotation = new THREE.Euler(0, 0, 0, "XYZ");
     this.args = args
-  }
+  }/*
   remove(child){
     for(let i=0;i<this.children.length;i++)if(this.children[i]===child){
       this.children=this.children.splice(i,1)
@@ -40,7 +40,7 @@ class FNode {
     this.children.push(child)
     child.parent = this;
   }
-  
+  */
   size(x, y, z) {
     this._size.set(x, y, z);
     return this;
@@ -174,7 +174,7 @@ let b = box().size(1,1,1).position(.15, 0.25, .25)
 let c = cylinder().size(1,1,1).position(.15, 0.25, -.35)
 let u = union(b,s,c)
 
-this.update = ()=>{return render(b,s,c,u).elements}
+this.update = ()=>{return render(b,s,c).elements}
 this.update()
     
     /*    render(
