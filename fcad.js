@@ -158,6 +158,7 @@ class FCAD {
           el._rotation = mesh.rotation;
         } else doOp(el);
         let m = el._mesh;
+        m.userData.node = el;
         self.elements.push(m);
         scene.add(m);
       }

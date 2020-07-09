@@ -151,7 +151,18 @@ let updateInteraction = event => {
     }
   }
   if (event.type === "mouseup") {
-    //setElements(fc.update())
+      for (var j = 0; j < selection.length; j++){
+        let s = selection[j]
+        scene.attach(s)
+        let el = s.userData.node
+        if(el){
+          el._position.copy(s.position);
+          el._scale.copy(s.scale);
+          el._rotation.copy(s.rotation);
+        }
+      }
+    debugger
+      setElements(fc.update())
   }
   if (event.type === "mousedown") {
     if (wasDragged) return;
