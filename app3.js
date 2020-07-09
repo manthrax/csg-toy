@@ -54,7 +54,10 @@ let elements = [];
 
 let setElements = e => {
   elements.forEach(s => s.parent.remove(s));
-  elements = e;
+  elements=[]
+  for(let i=0;i<e.length;i++)
+    elements.push(e[i])
+  elements.forEach(s => scene.attach(s));
 };
 
 let wasDragged = false;
@@ -146,6 +149,9 @@ let updateInteraction = event => {
       transformGroup.position.multiplyScalar(1 / selection.length);
       for (var j = 0; j < selection.length; j++) transformGroup.attach(selection[j]);
     }
+  }
+  if (event.type === "mouseup") {
+    //setElements(fc.update())
   }
   if (event.type === "mousedown") {
     if (wasDragged) return;
