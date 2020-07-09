@@ -46,11 +46,14 @@ let enforceGround = mesh => {
   tbox.setFromObject(mesh);
   if (tbox.min.y < 0) mesh.position.y -= tbox.min.y;
 };
+
+
 let selection = [];
 let wasDragged = false;
 
 
 let fc;
+
 
 
 tcontrol.addEventListener("dragging-changed", event => {
@@ -59,6 +62,7 @@ tcontrol.addEventListener("dragging-changed", event => {
   if (!wasDragged) {
     for (let i = 0; i < selection.length; i++) enforceGround(selection[i]);
   }else{
+    for (let i = 0; i < selection.length; i++) enforceGround(selection[i]);
     elements = fc.update().slice(0)
   }
   //debugger
@@ -88,8 +92,8 @@ selectionMaterial.color.set(0xffd000);
 
 let transformGroup = new THREE.Group();
 scene.add(transformGroup);
-tcontrol.attach(transformGroup);
 let elements = [];
+tcontrol.attach(transformGroup);
 
 
 let cadScene = new THREE.Group();

@@ -169,7 +169,7 @@ let u = union(b,s,c)
     this.eval(f);
 */
    // debugger
-    let s = sphere().size(1,1,1).position(.15, 0.25, -.15)
+  let s = sphere().size(1,1,1).position(.15, 0.25, -.15)
 let b = box().size(1,1,1).position(.15, 0.25, .25)
 let c = cylinder().size(1,1,1).position(.15, 0.25, -.35)
 let u = union(b,s,c)
