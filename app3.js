@@ -49,6 +49,16 @@ let enforceGround = mesh => {
 
 
 let selection = [];
+
+let elements = [];
+
+let setElements=(e)=>{
+  selection.length = 0;
+  elements.forEach(s=>scene.remove(s))
+  elements = e
+}
+
+
 let wasDragged = false;
 
 
@@ -62,8 +72,8 @@ tcontrol.addEventListener("dragging-changed", event => {
   if (!wasDragged) {
     for (let i = 0; i < selection.length; i++) enforceGround(selection[i]);
   }else{
+    setElements(fc.update())
     for (let i = 0; i < selection.length; i++) enforceGround(selection[i]);
-    elements = fc.update().slice(0)
   }
   //debugger
 });
@@ -92,19 +102,12 @@ selectionMaterial.color.set(0xffd000);
 
 let transformGroup = new THREE.Group();
 scene.add(transformGroup);
-let elements = [];
 tcontrol.attach(transformGroup);
 
 
 let cadScene = new THREE.Group();
 scene.add(cadScene);
 fc = new FCAD(cadScene);
-
-setElements(e){
-  selection.length = 0;
-  elements.length = 0;
-  
-}
 
 setElements(fc.update());
 
