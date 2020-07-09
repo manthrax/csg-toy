@@ -60,8 +60,6 @@ let setElements=(e)=>{
 
 
 let wasDragged = false;
-
-
 let fc;
 
 
@@ -72,7 +70,7 @@ tcontrol.addEventListener("dragging-changed", event => {
   if (!wasDragged) {
     for (let i = 0; i < selection.length; i++) enforceGround(selection[i]);
   }else{
-    setElements(fc.update())
+    //setElements(fc.update())
     for (let i = 0; i < selection.length; i++) enforceGround(selection[i]);
   }
   //debugger
