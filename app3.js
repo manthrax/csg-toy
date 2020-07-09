@@ -127,7 +127,8 @@ let updateInteraction = event => {
       let nsel = [];
       for (var j = 0; j < elements.length; j++) {
         if (selected[j]) {
-          elements[j].material = elements[j].userData.saveMaterial;
+          if(elements[j].userData.saveMaterial)
+            elements[j].material = elements[j].userData.saveMaterial;
           delete selected[j];
         }
       }
@@ -142,7 +143,7 @@ let updateInteraction = event => {
 
     transformGroup.position.set(0, 0, 0);
     let sel = [];
-    
+  
     if (selection.length) {
       for (var j = 0; j < selection.length; j++)
           transformGroup.position.add(selection[j].position);
@@ -160,8 +161,9 @@ let updateInteraction = event => {
           el._scale.copy(s.scale);
           el._rotation.copy(s.rotation);
         }
+        transformGroup.attach(s)
       }
-    debugger
+    //debugger
       setElements(fc.update())
   }
   if (event.type === "mousedown") {

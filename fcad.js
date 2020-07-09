@@ -155,6 +155,8 @@ class FCAD {
           mesh.scale.copy(el._scale);
           el._scale = mesh.scale;
           mesh.rotation.copy(el._rotation);
+          if(!mesh.material)
+            debugger
           el._rotation = mesh.rotation;
         } else doOp(el);
         let m = el._mesh;
