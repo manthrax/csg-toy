@@ -65,6 +65,7 @@ tcontrol.addEventListener("dragging-changed", event => {
   wasDragged = event.value;
   if (!wasDragged) {
   } else {
+    console.log("Drag")
     //setElements(fc.update())
   }
   for (let i = 0; i < elements.length; i++)
@@ -119,7 +120,7 @@ let updateInteraction = event => {
     for (var j = 0; j < elements.length; j++) {
       if (selected[j]) scene.attach(elements[j]);
     }
-    if (!event.shiftKey) {
+    if ((idx===undefined)||(!event.shiftKey)) {
       let nsel = [];
       for (var j = 0; j < elements.length; j++) {
         if (selected[j]) {
@@ -129,6 +130,7 @@ let updateInteraction = event => {
       }
       selected = {} 
       selection = []
+      if(idx===undefined)return;
     }
     if(!selected[idx]){
       selection.push(selected[idx]=elements[idx])
@@ -173,6 +175,7 @@ window.addEventListener(
 
 window.addEventListener("mousemove", updateInteraction, false);
 window.addEventListener("mousedown", updateInteraction, false);
+window.addEventListener("mouseup", updateInteraction, false);
 let resizeFn = event => {
   let width = window.innerWidth;
   let height = window.innerHeight;
