@@ -47,32 +47,28 @@ let enforceGround = mesh => {
   if (tbox.min.y < 0) mesh.position.y -= tbox.min.y;
 };
 
-
-let selection = [];
+let selected = {};
+let selection = []
 
 let elements = [];
 
-let setElements=(e)=>{
-  selection.length = 0;
-  elements.forEach(s=>scene.remove(s))
-  elements = e
-}
-
+let setElements = e => {
+  elements.forEach(s => s.parent.remove(s));
+  elements = e;
+};
 
 let wasDragged = false;
 let fc;
-
-
 
 tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
   wasDragged = event.value;
   if (!wasDragged) {
-    for (let i = 0; i < selection.length; i++) enforceGround(selection[i]);
-  }else{
+  } else {
     //setElements(fc.update())
-    for (let i = 0; i < selection.length; i++) enforceGround(selection[i]);
   }
+  for (let i = 0; i < elements.length; i++)
+    if (selected[i]) enforceGround(elements[i]);
   //debugger
 });
 let grid = new THREE.Mesh(
@@ -102,7 +98,6 @@ let transformGroup = new THREE.Group();
 scene.add(transformGroup);
 tcontrol.attach(transformGroup);
 
-
 let cadScene = new THREE.Group();
 scene.add(cadScene);
 fc = new FCAD(cadScene);
@@ -121,56 +116,63 @@ let updateInteraction = event => {
     m.material = mat;
   };
   let select = o => {
-    for (var j = 0; j < selection.length; j++) {
-      scene.attach(selection[j]);
+    for (var j = 0; j < elements.length; j++) {
+      if (selected[j]) scene.attach(elements[j]);
     }
     if (!event.shiftKey) {
       let nsel = [];
-      for (var j = 0; j < selection.length; j++) {
-        if (selection[j] != o) {
-          selection[j].material = selection[j].userData.saveMaterial;
-          delete selection[j].userData.selected;
-        } else nsel.push(selection[j]);
+      for (var j = 0; j < elements.length; j++) {
+        if (selected[j]) {
+          elements[j].material = elements[j].userData.saveMaterial;
+          delete selected[j];
+        }
       }
-
-      selection.length = 0;
-      for (let i = 0; i < nsel.length; i++) selection.push(nsel[i]);
     }
-
-    if (o && !o.userData.selected) {
-      selection.push(o);
-      o.userData.selected = true;
-      setMaterial(o, selectionMaterial);
+    
+    for (var j = 0; j < elements.length; j++) {
+      if(elements[j]===o){
+        if(!selected[j]){
+          selected[j]=o
+          setMaterial(o, selectionMaterial);
+        }
+      }
     }
+    
     transformGroup.position.set(0, 0, 0);
-    for (var j = 0; j < selection.length; j++) {
-      transformGroup.position.add(selection[j].position);
+    let sel = [];
+    for (var j = 0; j < elements.length; j++) {
+      if(selection[j]){
+        sel.push(elements[j])
+        transformGroup.position.add(elements[j].position);
+      }
     }
-    if (selection.length) {
-      transformGroup.position.multiplyScalar(1 / selection.length);
-      for (var j = 0; j < selection.length; j++)
-        transformGroup.attach(selection[j]);
+    if (sel.length) {
+      transformGroup.position.multiplyScalar(1 / sel.length);
+      for (var j = 0; j < sel.length; j++) transformGroup.attach(sel[j]);
     }
   };
   if (event.type === "mousedown") {
-    if(wasDragged)return;
+    if (wasDragged) return;
     if (intersects.length) {
-     // debugger
+      // debugger
       let o = intersects[0].object;
-      if(!o.userData.selected){
-        select(o)
+      if (!o.userData.selected) {
+        select(o);
       }
-    } else if(!wasDragged)select();
+    } else if (!wasDragged) select();
   }
-  
-  tcontrol.enabled = tcontrol.visible = selection.length ? true : false
-  
+
+  tcontrol.enabled = tcontrol.visible = selection.length ? true : false;
 };
-window.addEventListener("keydown", (e)=>{
-  if(e.shiftKey)tcontrol.setMode( "translate" )
-  if(e.ctrlKey)tcontrol.setMode( "rotate" )
-  if(e.altKey)tcontrol.setMode( "scale" )    
-}, false);
+window.addEventListener(
+  "keydown",
+  e => {
+    if (e.shiftKey) tcontrol.setMode("translate");
+    if (e.ctrlKey) tcontrol.setMode("rotate");
+    if (e.altKey) tcontrol.setMode("scale");
+  },
+  false
+);
 
 window.addEventListener("mousemove", updateInteraction, false);
 window.addEventListener("mousedown", updateInteraction, false);
