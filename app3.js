@@ -115,7 +115,7 @@ let updateInteraction = event => {
     if (!m.userData.saveMaterial) m.userData.saveMaterial = m.material;
     m.material = mat;
   };
-  let select = o => {
+  let select = idx => {
     for (var j = 0; j < elements.length; j++) {
       if (selected[j]) scene.attach(elements[j]);
     }
@@ -127,37 +127,34 @@ let updateInteraction = event => {
           delete selected[j];
         }
       }
+      selected = {} 
+      selection = []
     }
-    
-    for (var j = 0; j < elements.length; j++) {
-      if(elements[j]===o){
-        if(!selected[j]){
-          selected[j]=o
-          setMaterial(o, selectionMaterial);
-        }
-      }
+    if(!selected[idx]){
+      selection.push(selected[idx]=elements[idx])
+      setMaterial(elements[idx], selectionMaterial);
     }
-    
+
     transformGroup.position.set(0, 0, 0);
     let sel = [];
-    for (var j = 0; j < elements.length; j++) {
-      if(selection[j]){
-        sel.push(elements[j])
-        transformGroup.position.add(elements[j].position);
-      }
+    
+    if (selection.length) {
+      for (var j = 0; j < selection.length; j++)
+          transformGroup.position.add(selection[j].position);
+      transformGroup.position.multiplyScalar(1 / selection.length);
+      for (var j = 0; j < selection.length; j++) transformGroup.attach(selection[j]);
     }
-    if (sel.length) {
-      transformGroup.position.multiplyScalar(1 / sel.length);
-      for (var j = 0; j < sel.length; j++) transformGroup.attach(sel[j]);
-    }
-  };
+  }
   if (event.type === "mousedown") {
     if (wasDragged) return;
     if (intersects.length) {
       // debugger
       let o = intersects[0].object;
-      if (!o.userData.selected) {
-        select(o);
+      for(let i=0;i<elements.length;i++){
+        if(elements[i]==o){
+          if(!selected[i])
+            select(i);
+        }
       }
     } else if (!wasDragged) select();
   }
