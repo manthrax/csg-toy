@@ -2,7 +2,7 @@ import * as THREE from "https://threejs.org/build/three.module.js";
 
 import CSG from "./three-csg.js";
 
-import { ConvexBufferGeometry } from 'https://threejs.org/examples/jsm/geometries/ConvexGeometry.js';
+import { ConvexBufferGeometry } from "https://threejs.org/examples/jsm/geometries/ConvexGeometry.js";
 
 const backMaterial = new THREE.MeshStandardMaterial({
   color: "red",
@@ -19,15 +19,15 @@ const frontMaterial = new THREE.MeshStandardMaterial({
 });
 
 class FNode {
-  constructor(fcad, type, args=[]) {
+  constructor(fcad, type, args = []) {
     this.fcad = fcad;
     this.type = type;
     this._size = new THREE.Vector3(1, 1, 1);
     this._scale = new THREE.Vector3(1, 1, 1);
     this._position = new THREE.Vector3(0, 0, 0);
     this._rotation = new THREE.Euler(0, 0, 0, "XYZ");
-    this.args = args
-  }/*
+    this.args = args;
+  } /*
   remove(child){
     for(let i=0;i<this.children.length;i++)if(this.children[i]===child){
       this.children=this.children.splice(i,1)
@@ -58,9 +58,9 @@ class FNode {
     return this;
   }
   get mesh() {
-   this.src.updateMatrixWorld()
+    this.src.updateMatrixWorld();
     let m = CSG.toMesh(this.csg, this.src.matrix, this.src.material);
-    m.updateMatrixWorld()
+    m.updateMatrixWorld();
     m.renderOrder = 2;
     let b = new THREE.Mesh(m.geometry, backMaterial);
     m.add(b);
@@ -71,10 +71,10 @@ class FNode {
     this.csg = CSG.fromMesh((this.src = src));
     return this;
   }
-  getMesh(src){
+  getMesh(src) {
     return this.mesh;
   }
-  setMesh(src){
+  setMesh(src) {
     this.mesh = src;
   }
 }
@@ -83,24 +83,36 @@ class FCAD {
   constructor(scene) {
     this.scene = scene;
     this.elements = [];
-    
+
     let self = this;
     let vec3 = (x, y, z) => new THREE.Vector3(x, y, z);
     let sphere = () => new FNode(this, "sphere");
     let box = () => new FNode(this, "box");
     let cylinder = () => new FNode(this, "cylinder");
-    
-    let args=()=> Array.prototype.slice.call(arguments)
-    function nnode(type,args){
-      return new FNode(self, type, Array.prototype.slice.call(args))
+
+    let args = () => Array.prototype.slice.call(arguments);
+    function nnode(type, args) {
+      return new FNode(self, type, Array.prototype.slice.call(args));
     }
     //new FNode(this, "mesh", args());
-    let mesh = function(){ return nnode("mesh",arguments);}
-    let hull =  function(){ return nnode("hull",arguments);}
-    let union =  function(){ return nnode("union",arguments);}
-    let subtract =  function(){ return nnode("subtract",arguments);}
-    let intersect =  function(){ return nnode("intersect",arguments);}
-    let invert =  function(){ return nnode("invert",arguments);}
+    let mesh = function() {
+      return nnode("mesh", arguments);
+    };
+    let hull = function() {
+      return nnode("hull", arguments);
+    };
+    let union = function() {
+      return nnode("union", arguments);
+    };
+    let subtract = function() {
+      return nnode("subtract", arguments);
+    };
+    let intersect = function() {
+      return nnode("intersect", arguments);
+    };
+    let invert = function() {
+      return nnode("invert", arguments);
+    };
 
     let mkprim = geom => {
       let m = new THREE.Mesh(geom, frontMaterial);
@@ -115,20 +127,20 @@ class FCAD {
     /*
     var mesh = new THREE.Mesh( new THREE.ConvexBufferGeometry(points ));
     */
-    let doOp=(el)=>{
-      let t= el.type;
-      el.csg = new CSG()
-      if(t==='union'){
+    let doOp = el => {
+      let t = el.type;
+      el.csg = new CSG();
+      if (t === "union") {
         //debugger
-        if(el.args.length)el.src = el.args[0].getMesh()
-        for(let i=0;i<el.args.length;i++){
+        if (el.args.length) el.src = el.args[0].getMesh();
+        for (let i = 0; i < el.args.length; i++) {
           el.csg = el.csg.union(el.args[i].csg);
         }
-        el._mesh = el.getMesh()
+        el._mesh = el.getMesh();
         el._mesh.material = new THREE.MeshStandardMaterial();
       }
-    }
-    
+    };
+
     function render() {
       while (scene.children.length) scene.remove(scene.children[0]);
       self.elements.length = 0;
@@ -136,16 +148,15 @@ class FCAD {
         let el = e[i];
         let t = el.type;
         if (prims[t]) {
-          el.setMesh( prims[t].clone(true) );
-          let mesh = el._mesh = el.getMesh()
+          el.setMesh(prims[t].clone(true));
+          let mesh = (el._mesh = el.getMesh());
           mesh.position.copy(el._position);
-          el._position = mesh.position
+          el._position = mesh.position;
           mesh.scale.copy(el._scale);
-          el._scale = mesh.scale
+          el._scale = mesh.scale;
           mesh.rotation.copy(el._rotation);
-          el._rotation = mesh.rotation
-        }
-        else doOp(el)
+          el._rotation = mesh.rotation;
+        } else doOp(el);
         let m = el._mesh;
         self.elements.push(m);
         scene.add(m);
@@ -168,15 +179,23 @@ let u = union(b,s,c)
 
     this.eval(f);
 */
-   // debugger
-  let s = sphere().size(1,1,1).position(.15, 0.25, -.15)
-let b = box().size(1,1,1).position(.15, 0.25, .25)
-let c = cylinder().size(1,1,1).position(.15, 0.25, -.35)
-let u = union(b,s,c)
+    // debugger
+    let s = sphere()
+      .size(1, 1, 1)
+      .position(0.15, 0.25, -0.15);
+    let b = box()
+      .size(1, 1, 1)
+      .position(0.15, 0.25, 0.25);
+    let c = cylinder()
+      .size(1, 1, 1)
+      .position(0.15, 0.25, -0.35);
+    //let u = union(b, s, c);
 
-this.update = ()=>{return render(b,s,c).elements}
-this.update()
-    
+    this.update = () => {
+      return render(b, s, c).elements;
+    };
+    this.update();
+
     /*    render(
       sphere().size(1, 1, 1)
         .position(.15, 0.5, -.15),
