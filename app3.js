@@ -228,24 +228,19 @@ for (let i = 0; i < elements.length; i++) enforceGround(elements[i]);
 
 
 let plane = new THREE.Mesh(new THREE.PlaneGeometry(10,10),new THREE.ShaderMaterial({
-  uniforms:{
-    map:{value:grid.material.map}
-  },
-  vertexShader:`
-varying vec2 vUv;
-void main() {
-vUv = uv;
-	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+  uniforms:{map:{value:grid.material.map}},
+  vertexShader:`varying vec2 vUv;void main() {vUv = uv;gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );}`,
+  fragmentShader:`varying vec2 vUv; 
+float hexDist(vec2 p){
+p=abs(p);
+float c = dot(p,normalize(vec2(1,1.73)));
+c=max(c,p.x);
+return c;
 }
-`,
-  fragmentShader:`
-  varying vec2 vUv;
-  void main(){
-      
-      gl_FragColor=vec4(vUv.xy,1,1.);
-
-  }
-`
+void main(){
+vec2 uv =fract( vUv * 5. );
+float hd = hexDist(uv-.5);
+gl_FragColor=vec4(0.,0.,((hd>.25)&&(hd<.24))?1.:0.,1.);}`
 ,side:THREE.DoubleSide}))
 plane.position.y = -.1;
 plane.rotation.x = Math.PI*.5;
