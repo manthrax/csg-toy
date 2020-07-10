@@ -239,13 +239,15 @@ float hexDist(vec2 p){
 }
 void main(){
 vec2 uv = vUv * 10.;
-float p0=fract(dot(vec2(0,1),uv));
-float p1=fract(dot(vec2(1,1.73),uv));
-float p2=fract(dot(vec2(-1,1.73),uv));
+float s3 = 0.86602540378;
 
-gl_FragColor =vec4(0.,0.,((p0>.7)&&(p0<.8))?1.:0.,1.);
-gl_FragColor+=vec4(0.,0.,((p1>.7)&&(p1<.8))?1.:0.,1.);
-gl_FragColor+=vec4(0.,0.,((p2>.7)&&(p2<.8))?1.:0.,1.);
+float p0=fract(dot(vec2(0,1),uv)+.2);
+float p1=fract(dot(vec2( s3,.5),uv));
+float p2=fract(dot(vec2(-s3,.5),uv));
+
+gl_FragColor =vec4(0.,0.,((p0>.79)&&(p0<.8))?1.:0.,1.);
+gl_FragColor+=vec4(0.,0.,((p1>.79)&&(p1<.8))?1.:0.,1.);
+gl_FragColor+=vec4(0.,0.,((p2>.79)&&(p2<.8))?1.:0.,1.);
 
 }`
 ,side:THREE.DoubleSide}))
