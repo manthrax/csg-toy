@@ -246,7 +246,7 @@ vUv = uv;
 
   }
 `
-  
-}))
-
+,side:THREE.DoubleSide}))
+plane.position.y = -.1;
+plane.rotation.x = Math.PI*.5;
 scene.add(plane)
