@@ -8,7 +8,7 @@ import GridMaterial from "./grid-material.js";
 let camera, scene, renderer, ocontrols;
 let aspect = window.innerWidth / window.innerHeight;
 camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
-camera.position.set(0, 5, 10);
+camera.position.set(2, 1.5, 2)
 scene = new THREE.Scene();
 renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setClearColor(0x101010);
