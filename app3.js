@@ -225,3 +225,28 @@ elements = [mesh, mesh2]
 //`).elements;
 
 for (let i = 0; i < elements.length; i++) enforceGround(elements[i]);
+
+
+let plane = new THREE.Mesh(new THREE.PlaneGeometry(10,10),new THREE.ShaderMaterial({
+  uniforms:{
+    map:{value:grid.material.map}
+  },
+  vertexShader:`
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+	gl_FragColor = vec4( 1.0, 0.0, 0.0, 1.0 );
+}
+`,
+  fragmentShader:`
+  varying vec2 vUv;
+  void main(){
+      
+      gl_FragColor=vec4(vUv.x,0,0,1.);
+
+  }
+`
+  
+}))
+
+scene.add(plane)
