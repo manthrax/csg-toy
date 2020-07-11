@@ -132,8 +132,8 @@ class FCAD {
       let t = el.type;
       el.csg = new CSG();
       if (t === "union") {
-        for (let i = 0; i < el.args.length; i++)el.args[i].src = el.args[i].getMesh();
-        for (let i = 0; i < el.args.length; i++)
+        if(el.args.length){el.csg = el.args[0].csg.clone();el.src = el.args[0].getMesh()}
+        for (let i = 1; i < el.args.length; i++)
           el.csg = el.csg.union(el.args[i].csg);
         el._mesh = el.getMesh();
         el._mesh.material = new THREE.MeshStandardMaterial();
@@ -155,11 +155,11 @@ class FCAD {
           mesh.rotation.copy(el._rotation);
           if(!mesh.material)
             debugger
-            
+            /*
           el._rotation = mesh.rotation;
           el._position = mesh.position;
           el._scale = mesh.scale;
-          
+          */
         } else doOp(el);
         let m = el._mesh;
         m.userData.node = el;
@@ -197,7 +197,7 @@ let u = union(b,s,c)
    //let u = union(s, c);
 
     this.update = () => {
-      return render(b, s, c, union( s, c)).elements;
+      return render(b, s, c, union(s,c)).elements;
     };
     this.update();
 

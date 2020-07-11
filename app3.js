@@ -171,7 +171,12 @@ let mouseEvent = event => {
     elements.forSelected((e, i) => {
       scene.attach(e);
       e.updateMatrixWorld();
+      e.userData.node._position.copy(e.position)
+      e.userData.node._scale.copy(e.scale)
+      e.userData.node._rotation.copy(e.rotation)
+      console.log(e.userData.node.type,e.userData.node._position)
     })
+    debugger
     elements.set(fc.update());
     elements.forEach(enforceGround);
     elements.forSelected((e, i) => transformGroup.attach(e));
