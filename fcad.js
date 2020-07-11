@@ -151,14 +151,17 @@ class FCAD {
         if (prims[t]) {
           el.setMesh(prims[t].clone(true));
           let mesh = (el._mesh = el.getMesh());
+          //debugger
           mesh.position.copy(el._position);
-          el._position = mesh.position;
           mesh.scale.copy(el._scale);
-          el._scale = mesh.scale;
           mesh.rotation.copy(el._rotation);
           if(!mesh.material)
             debugger
+            
           el._rotation = mesh.rotation;
+          el._position = mesh.position;
+          el._scale = mesh.scale;
+          
         } else doOp(el);
         let m = el._mesh;
         m.userData.node = el;

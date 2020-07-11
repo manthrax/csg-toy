@@ -146,7 +146,6 @@ tcontrol.addEventListener("dragging-changed", event => {
     console.log("Drag");
     //setElements(fc.update())
   }
-  elements.forSelected(enforceGround);
 });
 
 elements.set(fc.update());
@@ -173,16 +172,10 @@ let mouseEvent = event => {
       scene.attach(e);
       e.updateMatrixWorld();
     })
-    elements.forSelected((e, i) => {
-      let el = e.userData.node;
-      if (el) {
-        el._position.copy(e.position);
-        el._scale.copy(e.scale);
-        el._rotation.copy(e.rotation);
-      }
-      transformGroup.attach(e);
-    });
     elements.set(fc.update());
+    elements.forEach(enforceGround);
+    elements.forSelected((e, i) => transformGroup.attach(e));
+    elements.update()
   }
   tcontrol.enabled = tcontrol.visible = elements.selectedCount ? true : false;
 };
