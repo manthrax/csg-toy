@@ -54,11 +54,13 @@ let elements = [];
 
 let setElements = e => {
   elements.forEach(s => s.parent.remove(s));
+  
   elements=[]
   for(let i=0;i<e.length;i++)
     elements.push(e[i])
-  elements.forEach(s => scene.attach(s));
-};
+  elements.forEach((s,i) =>{ scene.attach(s);if(selection[i])select(s);});
+  
+}
 
 let wasDragged = false;
 let fc;
