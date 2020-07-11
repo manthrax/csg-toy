@@ -47,24 +47,28 @@ let enforceGround = mesh => {
   if (tbox.min.y < 0) mesh.position.y -= tbox.min.y;
 };
 
+scene.add(GridMaterial.makeGrid());
+
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2();
+let selectionMaterial = frontMaterial.clone();
+selectionMaterial.color.set(0xffd000);
+let transformGroup = new THREE.Group();
+scene.add(transformGroup);
+tcontrol.attach(transformGroup);
+
+
 let selected = {};
 let selection = [];
 
 let elements = [];
 
-let setElements = e => {
-  elements.forEach(s => s.parent.remove(s));
-
-  elements = [];
-  for (let i = 0; i < e.length; i++) elements.push(e[i]);
-  elements.forEach((s, i) => {
-    scene.attach(s);
-    if (selection[i]) select(i);
-  });
-};
-
 let wasDragged = false;
 let fc;
+
+let cadScene = new THREE.Group();
+scene.add(cadScene);
+fc = new FCAD(cadScene);
 
 tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
@@ -79,64 +83,53 @@ tcontrol.addEventListener("dragging-changed", event => {
   //debugger
 });
 
-scene.add(GridMaterial.makeGrid());
-
-
-var raycaster = new THREE.Raycaster();
-var mouse = new THREE.Vector2();
-let selectionMaterial = frontMaterial.clone();
-selectionMaterial.color.set(0xffd000);
-let transformGroup = new THREE.Group();
-scene.add(transformGroup);
-tcontrol.attach(transformGroup);
-
-
-let cadScene = new THREE.Group();
-scene.add(cadScene);
-fc = new FCAD(cadScene);
-
-setElements(fc.update());
-
 let setMaterial = (m, mat) => {
-  if (!m.userData.saveMaterial) m.userData.saveMaterial = m.material;
+  if (!m.userData.saveMaterial && m.userData.material !== m.material)
+    m.userData.saveMaterial = m.material;
   m.material = mat;
 };
 
-let clearSelection=() => {
-  selection=[]
-  selected={}
-}
+let clearSelection = () => {
+  selection = [];
+  selected = {};
+};
 
 let deselect = idx => {
-  if(selected[idx]){
-      if (elements[idx].userData.saveMaterial)
-        elements[idx].material = elements[idx].userData.saveMaterial;
-    delete selected[idx]
-  }
-}
-
-let select = idx => {
-  selected[idx] = elements[idx]
-  setMaterial(elements[idx], selectionMaterial);
-}
-
-let tv30 = new THREE.Vector3()
-
-let updateSelection=()=>{  
-  transformGroup.position.set(0, 0, 0);
-    for (var j = 0; j < elements.length; j++){
-      if(selected[j]){
-    transformGroup.position.add(elements[j].localToWorld(tv30.set(0,0,0));        
-      }
-    }
-    transformGroup.position.multiplyScalar(1 / selection.length);
-    for (var j = 0; j < selection.length; j++)
-      transformGroup.attach(selection[j]);
+  if (selected[idx]) {
+    if (elements[idx].userData.saveMaterial)
+      elements[idx].material = elements[idx].userData.saveMaterial;
+    delete selected[idx];
   }
 };
 
+let select = idx => {
+  selected[idx] = elements[idx];
+  setMaterial(elements[idx], selectionMaterial);
+};
 
-let updateInteraction = event => {
+let tv30 = new THREE.Vector3();
+
+let updateSelection = () => {
+  transformGroup.position.set(0, 0, 0);
+  for (var j = 0; j < elements.length; j++)
+    selected[j] &&
+      transformGroup.position.add(elements[j].localToWorld(tv30.set(0, 0, 0)));
+  transformGroup.position.multiplyScalar(1 / selection.length);
+};
+
+let setElements = e => {
+  elements.forEach(s => s.parent.remove(s));
+  elements = [];
+  for (let i = 0; i < e.length; i++) elements.push(e[i]);
+  elements.forEach((s, i) => {
+    scene.attach(s);
+    if (selection[i]) select(i);
+  });
+};
+
+setElements(fc.update());
+
+let mouseEvent = event => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
@@ -153,26 +146,28 @@ let updateInteraction = event => {
           if (!selected[i]) select(i);
         }
       }
-    } else if (!wasDragged) select();
-  }else
-  if (event.type === "mouseup") {
-    for (var j = 0; j < selection.length; j++) {
-      let s = selection[j];
-      //scene.attach(s);
-      
-      let el = s.userData.node;
-      if (el) {
-        el._position.copy(s.position);
-        el._scale.copy(s.scale);
-        el._rotation.copy(s.rotation);
+    } else if (!wasDragged) clearSelection();
+  } else if (event.type === "mouseup") {
+    for (let i = 0; i < elements.length; i++) {
+      if (!selected[i]) select(i);
+      for (var j = 0; j < selection.length; j++) {
+        let s = selection[j];
+        scene.attach(s);
+        s.updateMatrixWorld();
+        let el = s.userData.node;
+        if (el) {
+          el._position.copy(s.position);
+          el._scale.copy(s.scale);
+          el._rotation.copy(s.rotation);
+        }
+        transformGroup.attach(s);
       }
-      //transformGroup.attach(s)
+      setElements(fc.update());
     }
-    //debugger
-    setElements(fc.update());
+    tcontrol.enabled = tcontrol.visible = selection.length ? true : false;
   }
-  tcontrol.enabled = tcontrol.visible = selection.length ? true : false;
 };
+
 window.addEventListener(
   "keydown",
   e => {
@@ -182,10 +177,12 @@ window.addEventListener(
   },
   false
 );
+window.addEventListener("keyup", () => tcontrol.setMode("translate"), false);
 
-window.addEventListener("mousemove", updateInteraction, false);
-window.addEventListener("mousedown", updateInteraction, false);
-window.addEventListener("mouseup", updateInteraction, false);
+window.addEventListener("mousemove", mouseEvent, false);
+window.addEventListener("mousedown", mouseEvent, false);
+window.addEventListener("mouseup", mouseEvent, false);
+
 let resizeFn = event => {
   let width = window.innerWidth;
   let height = window.innerHeight;
