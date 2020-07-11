@@ -58,7 +58,7 @@ let setElements = e => {
   elements=[]
   for(let i=0;i<e.length;i++)
     elements.push(e[i])
-  elements.forEach((s,i) =>{ scene.attach(s);if(selection[i])select(s);});
+  elements.forEach((s,i) =>{ scene.attach(s);if(selection[i])select(i);});
   
 }
 
@@ -99,7 +99,6 @@ var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 let selectionMaterial = frontMaterial.clone();
 selectionMaterial.color.set(0xffd000);
-
 let transformGroup = new THREE.Group();
 scene.add(transformGroup);
 tcontrol.attach(transformGroup);
@@ -110,6 +109,44 @@ fc = new FCAD(cadScene);
 
 setElements(fc.update());
 
+let setMaterial = (m, mat) => {
+  if (!m.userData.saveMaterial) m.userData.saveMaterial = m.material;
+  m.material = mat;
+}
+
+let select = idx => {
+  //debugger
+  for (var j = 0; j < elements.length; j++) {
+    if (selected[j]) scene.attach(elements[j]);
+  }
+  if ((idx===undefined)||(!event.shiftKey)) {
+    let nsel = [];
+    for (var j = 0; j < elements.length; j++) {
+      if (selected[j]) {
+        if(elements[j].userData.saveMaterial)
+          elements[j].material = elements[j].userData.saveMaterial;
+        delete selected[j];
+      }
+    }
+    selected = {} 
+    selection = []
+    if(idx===undefined)return;
+  }
+  if(!selected[idx]){
+    selection.push(selected[idx]=elements[idx])
+    setMaterial(elements[idx], selectionMaterial);
+  }
+
+  transformGroup.position.set(0, 0, 0);
+  let sel = [];
+
+  if (selection.length) {
+    for (var j = 0; j < selection.length; j++)
+        transformGroup.position.add(selection[j].position);
+    transformGroup.position.multiplyScalar(1 / selection.length);
+    for (var j = 0; j < selection.length; j++) transformGroup.attach(selection[j]);
+  }
+}
 let updateInteraction = event => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -117,42 +154,6 @@ let updateInteraction = event => {
   // calculate objects intersecting the picking ray
   var intersects = raycaster.intersectObjects(elements); // scene.children );
 
-  let setMaterial = (m, mat) => {
-    if (!m.userData.saveMaterial) m.userData.saveMaterial = m.material;
-    m.material = mat;
-  };
-  let select = idx => {
-    for (var j = 0; j < elements.length; j++) {
-      if (selected[j]) scene.attach(elements[j]);
-    }
-    if ((idx===undefined)||(!event.shiftKey)) {
-      let nsel = [];
-      for (var j = 0; j < elements.length; j++) {
-        if (selected[j]) {
-          if(elements[j].userData.saveMaterial)
-            elements[j].material = elements[j].userData.saveMaterial;
-          delete selected[j];
-        }
-      }
-      selected = {} 
-      selection = []
-      if(idx===undefined)return;
-    }
-    if(!selected[idx]){
-      selection.push(selected[idx]=elements[idx])
-      setMaterial(elements[idx], selectionMaterial);
-    }
-
-    transformGroup.position.set(0, 0, 0);
-    let sel = [];
-  
-    if (selection.length) {
-      for (var j = 0; j < selection.length; j++)
-          transformGroup.position.add(selection[j].position);
-      transformGroup.position.multiplyScalar(1 / selection.length);
-      for (var j = 0; j < selection.length; j++) transformGroup.attach(selection[j]);
-    }
-  }
   if (event.type === "mouseup") {
       for (var j = 0; j < selection.length; j++){
         let s = selection[j]
@@ -163,7 +164,7 @@ let updateInteraction = event => {
           el._scale.copy(s.scale);
           el._rotation.copy(s.rotation);
         }
-        transformGroup.attach(s)
+        //transformGroup.attach(s)
       }
     //debugger
       setElements(fc.update())
@@ -228,31 +229,3 @@ elements = [mesh, mesh2]
 
 for (let i = 0; i < elements.length; i++) enforceGround(elements[i]);
 
-
-let plane = new THREE.Mesh(new THREE.PlaneGeometry(10,10),new THREE.ShaderMaterial({
-  uniforms:{map:{value:grid.material.map}},
-  vertexShader:`varying vec2 vUv;void main() {vUv = uv;gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );}`,
-  fragmentShader:`varying vec2 vUv; 
-float hexDist(vec2 p){
-  p=abs(p);
-  float c = dot(p,normalize(vec2(1,1.73)));
-  c=max(c,p.x);
-  return c;
-}
-void main(){
-vec2 uv = vUv * 10.;
-float s3 = 0.86602540378;
-
-float p0=fract(dot(vec2(0,1),uv)+.2);
-float p1=fract(dot(vec2( s3,.5),uv));
-float p2=fract(dot(vec2(-s3,.5),uv));
-
-gl_FragColor =vec4(0.,0.,((p0>.79)&&(p0<.8))?1.:0.,1.);
-gl_FragColor+=vec4(0.,0.,((p1>.79)&&(p1<.8))?1.:0.,1.);
-gl_FragColor+=vec4(0.,0.,((p2>.79)&&(p2<.8))?1.:0.,1.);
-
-}`
-,side:THREE.DoubleSide}))
-plane.position.y = -.1;
-plane.rotation.x = Math.PI*.5;
-scene.add(plane)
