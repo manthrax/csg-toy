@@ -123,7 +123,7 @@ let setElements = e => {
   for (let i = 0; i < e.length; i++) elements.push(e[i]);
   elements.forEach((s, i) => {
     scene.attach(s);
-    if (selection[i]) select(i);
+    if (selected[i]) select(i);
   });
 };
 
@@ -139,19 +139,16 @@ let mouseEvent = event => {
   if (event.type === "mousedown") {
     if (wasDragged) return;
     if (intersects.length) {
-      // debugger
       let o = intersects[0].object;
       for (let i = 0; i < elements.length; i++) {
-        if (elements[i] == o) {
-          if (!selected[i]) select(i);
-        }
+        if (elements[i] == o) select(i);
       }
     } else if (!wasDragged) clearSelection();
   } else if (event.type === "mouseup") {
+    
     for (let i = 0; i < elements.length; i++) {
-      if (!selected[i]) select(i);
-      for (var j = 0; j < selection.length; j++) {
-        let s = selection[j];
+      if (selected[i]){
+        let s = elements[i];
         scene.attach(s);
         s.updateMatrixWorld();
         let el = s.userData.node;
@@ -166,7 +163,7 @@ let mouseEvent = event => {
     }
     tcontrol.enabled = tcontrol.visible = selection.length ? true : false;
   }
-};
+}
 
 window.addEventListener(
   "keydown",
