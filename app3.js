@@ -79,6 +79,8 @@ class Elements {
     m.material = mat;
   }
   clearSelection() {
+    this.forSelection((e)=>scene.attach(e))
+    this.deselect(e=>setMaterial()
     this.selected = {};
     this.selection = [];
   }
@@ -98,8 +100,9 @@ class Elements {
       transformGroup.position.set(0, 0, 0);
       this.forSelected(e=>scene.attach(e))
       this.forSelected(e=>transformGroup.position.add(e.localToWorld(tv30.set(0, 0, 0))));
-      this.forSelected(e=>transformGroup.attach(e))
+      //debugger
       transformGroup.position.multiplyScalar(1 / this.selectedCount);
+      this.forSelected(e=>transformGroup.attach(e))
     }
   }
 
@@ -157,11 +160,16 @@ let mouseEvent = event => {
     if (intersects.length) {
       let o = intersects[0].object;
       elements.forEach((e, i) => e === o && elements.select(i));
-    } else if (!wasDragged) elements.clearSelection();
+    } else if (!wasDragged){
+      debugger
+      elements.clearSelection();
+    }
   } else if (event.type === "mouseup") {
     elements.forSelected((e, i) => {
       scene.attach(e);
       e.updateMatrixWorld();
+    })
+    elements.forSelected((e, i) => {
       let el = e.userData.node;
       if (el) {
         el._position.copy(e.position);
@@ -170,8 +178,8 @@ let mouseEvent = event => {
       }
       transformGroup.attach(e);
     });
+    //elements.set(fc.update());
   }
-  elements.set(fc.update());
   tcontrol.enabled = tcontrol.visible = elements.selectedCount ? true : false;
 };
 
