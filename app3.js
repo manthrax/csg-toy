@@ -58,10 +58,66 @@ scene.add(transformGroup);
 tcontrol.attach(transformGroup);
 
 
-let selected = {};
-let selection = [];
+let tv30 = new THREE.Vector3();
+class Elements
+{
+  constructor()
+  {
+    this.selected = {};
+    this.elements = [];
+  }
+  forEach(fn){
+    this.elements.forEach(fn)
+  }
+  forSelected(fn){
+    this.elements.forEach((s,i)=>this.selected[i])fn(s,i))
+  }
+  
+  
+  setMaterial = (m, mat) {
+    if (!m.userData.saveMaterial && m.userData.material !== m.material)
+      m.userData.saveMaterial = m.material;
+    m.material = mat;
+  }
+clearSelection(){
+  this.selected={}
+}
 
-let elements = [];
+ deselect (idx) {
+  if (this.selected[idx]) {
+    if (this.elements[idx].userData.saveMaterial)
+      this.elements[idx].material = this.elements[idx].userData.saveMaterial;
+    delete this.selected[idx];
+  }
+}
+
+ select (idx) {
+  this.selected[idx] = elements[idx];
+  setMaterial(this.elements[idx], selectionMaterial);
+}
+
+
+update () {
+  transformGroup.position.set(0, 0, 0);
+  for (var j = 0; j < elements.length; j++)
+    selected[j] &&
+      transformGroup.position.add(elements[j].localToWorld(tv30.set(0, 0, 0)));
+  transformGroup.position.multiplyScalar(1 / selection.length);
+}
+
+set(e) {
+  this.forEach(s => s.parent.remove(s))
+  this.elements = e.slice(0)
+  this.forEach((s, i) => {
+    scene.attach(s);
+    if (selected[i]) select(i);
+  })
+}
+
+}
+
+let elements = new Elements()
+
 
 let wasDragged = false;
 let fc;
@@ -69,6 +125,9 @@ let fc;
 let cadScene = new THREE.Group();
 scene.add(cadScene);
 fc = new FCAD(cadScene);
+
+
+
 
 tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
@@ -78,56 +137,10 @@ tcontrol.addEventListener("dragging-changed", event => {
     console.log("Drag");
     //setElements(fc.update())
   }
-  for (let i = 0; i < elements.length; i++)
-    if (selected[i]) enforceGround(elements[i]);
-  //debugger
+  elements.forSelected(enforceGround)
 });
 
-let setMaterial = (m, mat) => {
-  if (!m.userData.saveMaterial && m.userData.material !== m.material)
-    m.userData.saveMaterial = m.material;
-  m.material = mat;
-};
-
-let clearSelection = () => {
-  selection = [];
-  selected = {};
-};
-
-let deselect = idx => {
-  if (selected[idx]) {
-    if (elements[idx].userData.saveMaterial)
-      elements[idx].material = elements[idx].userData.saveMaterial;
-    delete selected[idx];
-  }
-};
-
-let select = idx => {
-  selected[idx] = elements[idx];
-  setMaterial(elements[idx], selectionMaterial);
-};
-
-let tv30 = new THREE.Vector3();
-
-let updateSelection = () => {
-  transformGroup.position.set(0, 0, 0);
-  for (var j = 0; j < elements.length; j++)
-    selected[j] &&
-      transformGroup.position.add(elements[j].localToWorld(tv30.set(0, 0, 0)));
-  transformGroup.position.multiplyScalar(1 / selection.length);
-};
-
-let setElements = e => {
-  elements.forEach(s => s.parent.remove(s));
-  elements = [];
-  for (let i = 0; i < e.length; i++) elements.push(e[i]);
-  elements.forEach((s, i) => {
-    scene.attach(s);
-    if (selected[i]) select(i);
-  });
-};
-
-setElements(fc.update());
+elements.set(fc.update());
 
 let mouseEvent = event => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -140,15 +153,11 @@ let mouseEvent = event => {
     if (wasDragged) return;
     if (intersects.length) {
       let o = intersects[0].object;
-      for (let i = 0; i < elements.length; i++) {
-        if (elements[i] == o) select(i);
-      }
-    } else if (!wasDragged) clearSelection();
+      elements.forEach((e,i)=>if(e===o)this.select(i))
+    } else if (!wasDragged) 
+      clearSelection();
   } else if (event.type === "mouseup") {
-    
-    for (let i = 0; i < elements.length; i++) {
-      if (selected[i]){
-        let s = elements[i];
+    elements.forSelection((e,i)=>{
         scene.attach(s);
         s.updateMatrixWorld();
         let el = s.userData.node;
@@ -158,12 +167,12 @@ let mouseEvent = event => {
           el._rotation.copy(s.rotation);
         }
         transformGroup.attach(s);
-      }
-      setElements(fc.update());
-    }
-    tcontrol.enabled = tcontrol.visible = selection.length ? true : false;
+    })
   }
-}
+    elements.set(fc.update());
+    tcontrol.enabled = tcontrol.visible = elements.selectedCount ? true : false;
+  }
+
 
 window.addEventListener(
   "keydown",
