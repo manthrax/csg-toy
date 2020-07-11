@@ -91,12 +91,9 @@ scene.add(transformGroup);
 tcontrol.attach(transformGroup);
 
 
-
-
 let cadScene = new THREE.Group();
 scene.add(cadScene);
 fc = new FCAD(cadScene);
-
 
 setElements(fc.update());
 
@@ -105,40 +102,40 @@ let setMaterial = (m, mat) => {
   m.material = mat;
 };
 
-let select = idx => {
-  //debugger
-  for (var j = 0; j < elements.length; j++) {
-    if (selected[j]) scene.attach(elements[j]);
+let clearSelection=() => {
+  selection=[]
+  selected={}
+}
+
+let deselect = idx => {
+  if(selected[idx]){
+      if (elements[idx].userData.saveMaterial)
+        elements[idx].material = elements[idx].userData.saveMaterial;
+    delete selected[idx]
   }
-  if (idx === undefined || !event.shiftKey) {
-    let nsel = [];
-    for (var j = 0; j < elements.length; j++) {
-      if (selected[j]) {
-        if (elements[j].userData.saveMaterial)
-          elements[j].material = elements[j].userData.saveMaterial;
-        delete selected[j];
+}
+
+let select = idx => {
+  selected[idx] = elements[idx]
+  setMaterial(elements[idx], selectionMaterial);
+}
+
+let tv30 = new THREE.Vector3()
+
+let updateSelection=()=>{  
+  transformGroup.position.set(0, 0, 0);
+    for (var j = 0; j < elements.length; j++){
+      if(selected[j]){
+    transformGroup.position.add(elements[j].localToWorld(tv30.set(0,0,0));        
       }
     }
-    selected = {};
-    selection = [];
-    if (idx === undefined) return;
-  }
-  if (!selected[idx]) {
-    selection.push((selected[idx] = elements[idx]));
-    setMaterial(elements[idx], selectionMaterial);
-  }
-
-  transformGroup.position.set(0, 0, 0);
-  let sel = [];
-
-  if (selection.length) {
-    for (var j = 0; j < selection.length; j++)
-      transformGroup.position.add(selection[j].position);
     transformGroup.position.multiplyScalar(1 / selection.length);
     for (var j = 0; j < selection.length; j++)
       transformGroup.attach(selection[j]);
   }
 };
+
+
 let updateInteraction = event => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
