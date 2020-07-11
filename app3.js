@@ -84,27 +84,33 @@ class Elements {
   }
 
   deselect(idx) {
-    if (this.selected[idx]) {
-      if (this.elements[idx].userData.saveMaterial)
-        this.elements[idx].material = this.elements[idx].userData.saveMaterial;
+    let e = this.selected[idx];
+    if (e) {
+      if (e.userData.saveMaterial) e.material = e.userData.saveMaterial;
       delete this.selected[idx];
+      scene.attach(e);
+      this.update();
+    }
+  }
+
+  update() {    
+    if (this.selectedCount) {
+      transformGroup.position.set(0, 0, 0);
+      this.forSelected(e=>scene.attach(e))
+      this.forSelected(e=>transformGroup.position.add(e.localToWorld(tv30.set(0, 0, 0))));
+      this.forSelected(e=>transformGroup.attach(e))
+      transformGroup.position.multiplyScalar(1 / this.selectedCount);
     }
   }
 
   select(idx) {
-    this.selected[idx] = this.elements[idx];
-    this.selection.push(this.elements[idx]);
-    this.setMaterial(this.elements[idx], selectionMaterial);
-    transformGroup.attach()
+    let e = this.elements[idx];
+    this.selected[idx] = e;
+    this.selection.push(e);
+    this.setMaterial(e, selectionMaterial);
+    transformGroup.attach(e);
+    this.update();
   }
-  update() {
-    transformGroup.position.set(0, 0, 0);
-    this.forSelected((e, i) =>
-      transformGroup.position.add(elements[j].localToWorld(tv30.set(0, 0, 0)))
-    );
-    transformGroup.position.multiplyScalar(1 / this.selectedCount);
-  }
-
   set(e) {
     this.forEach(s => s.parent.remove(s));
     this.elements = e.slice(0);
@@ -113,8 +119,9 @@ class Elements {
       scene.attach(s);
       if (this.selected[i]) this.select(i);
     });
+    this.update();
   }
-} 
+}
 
 let elements = new Elements();
 
@@ -149,7 +156,7 @@ let mouseEvent = event => {
     if (wasDragged) return;
     if (intersects.length) {
       let o = intersects[0].object;
-      elements.forEach((e, i) => (e === o) && elements.select(i));
+      elements.forEach((e, i) => e === o && elements.select(i));
     } else if (!wasDragged) elements.clearSelection();
   } else if (event.type === "mouseup") {
     elements.forSelected((e, i) => {
