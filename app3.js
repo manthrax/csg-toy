@@ -57,67 +57,66 @@ let transformGroup = new THREE.Group();
 scene.add(transformGroup);
 tcontrol.attach(transformGroup);
 
-
 let tv30 = new THREE.Vector3();
-class Elements
-{
-  constructor()
-  {
+class Elements {
+  constructor() {
     this.selected = {};
+    this.selection = [];
     this.elements = [];
   }
-  forEach(fn){
-    this.elements.forEach(fn)
+  get selectedCount() {
+    return this.selection.length;
   }
-  forSelected(fn){
-    this.elements.forEach((s,i)=>this.selected[i])fn(s,i))
+  forEach(fn) {
+    this.elements.forEach(fn);
   }
-  
-  
-  setMaterial = (m, mat) {
+  forSelected(fn) {
+    this.selection.forEach(fn);
+  }
+  setMaterial(m, mat) {
     if (!m.userData.saveMaterial && m.userData.material !== m.material)
       m.userData.saveMaterial = m.material;
     m.material = mat;
   }
-clearSelection(){
-  this.selected={}
-}
-
- deselect (idx) {
-  if (this.selected[idx]) {
-    if (this.elements[idx].userData.saveMaterial)
-      this.elements[idx].material = this.elements[idx].userData.saveMaterial;
-    delete this.selected[idx];
+  clearSelection() {
+    this.selected = {};
+    this.selection = [];
   }
-}
 
- select (idx) {
-  this.selected[idx] = elements[idx];
-  setMaterial(this.elements[idx], selectionMaterial);
-}
+  deselect(idx) {
+    if (this.selected[idx]) {
+      if (this.elements[idx].userData.saveMaterial)
+        this.elements[idx].material = this.elements[idx].userData.saveMaterial;
+      delete this.selected[idx];
+    }
+  }
 
+  select(idx) {
+    this.selected[idx] = this.elements[idx];
+    this.selection.push(this.elements[idx]);
+    this.setMaterial(this.elements[idx], selectionMaterial);
+    transformGroup.attach()
+  }
+  update() {
+    transformGroup.position.set(0, 0, 0);
+    this.forSelected((e, i) =>
+      transformGroup.position.add(elements[j].localToWorld(tv30.set(0, 0, 0)))
+    );
+    transformGroup.position.multiplyScalar(1 / this.selectedCount);
+  }
 
-update () {
-  transformGroup.position.set(0, 0, 0);
-  for (var j = 0; j < elements.length; j++)
-    selected[j] &&
-      transformGroup.position.add(elements[j].localToWorld(tv30.set(0, 0, 0)));
-  transformGroup.position.multiplyScalar(1 / selection.length);
-}
+  set(e) {
+    this.forEach(s => s.parent.remove(s));
+    this.elements = e.slice(0);
+    this.selection = [];
+    this.forEach((s, i) => {
+      scene.attach(s);
+      if (this.selected[i]) this.select(i);
+    });
+  }
+} 
 
-set(e) {
-  this.forEach(s => s.parent.remove(s))
-  this.elements = e.slice(0)
-  this.forEach((s, i) => {
-    scene.attach(s);
-    if (selected[i]) select(i);
-  })
-}
-
-}
-
-let elements = new Elements()
-
+let elements = new Elements();
 
 let wasDragged = false;
 let fc;
@@ -125,9 +124,6 @@ let fc;
 let cadScene = new THREE.Group();
 scene.add(cadScene);
 fc = new FCAD(cadScene);
-
-
-
 
 tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
@@ -137,7 +133,7 @@ tcontrol.addEventListener("dragging-changed", event => {
     console.log("Drag");
     //setElements(fc.update())
   }
-  elements.forSelected(enforceGround)
+  elements.forSelected(enforceGround);
 });
 
 elements.set(fc.update());
@@ -147,32 +143,30 @@ let mouseEvent = event => {
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
   // calculate objects intersecting the picking ray
-  var intersects = raycaster.intersectObjects(elements); // scene.children );
+  var intersects = raycaster.intersectObjects(elements.elements); // scene.children );
 
   if (event.type === "mousedown") {
     if (wasDragged) return;
     if (intersects.length) {
       let o = intersects[0].object;
-      elements.forEach((e,i)=>if(e===o)this.select(i))
-    } else if (!wasDragged) 
-      clearSelection();
+      elements.forEach((e, i) => (e === o) && elements.select(i));
+    } else if (!wasDragged) elements.clearSelection();
   } else if (event.type === "mouseup") {
-    elements.forSelection((e,i)=>{
-        scene.attach(s);
-        s.updateMatrixWorld();
-        let el = s.userData.node;
-        if (el) {
-          el._position.copy(s.position);
-          el._scale.copy(s.scale);
-          el._rotation.copy(s.rotation);
-        }
-        transformGroup.attach(s);
-    })
+    elements.forSelected((e, i) => {
+      scene.attach(e);
+      e.updateMatrixWorld();
+      let el = e.userData.node;
+      if (el) {
+        el._position.copy(e.position);
+        el._scale.copy(e.scale);
+        el._rotation.copy(e.rotation);
+      }
+      transformGroup.attach(e);
+    });
   }
-    elements.set(fc.update());
-    tcontrol.enabled = tcontrol.visible = elements.selectedCount ? true : false;
-  }
-
+  elements.set(fc.update());
+  tcontrol.enabled = tcontrol.visible = elements.selectedCount ? true : false;
+};
 
 window.addEventListener(
   "keydown",
