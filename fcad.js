@@ -28,20 +28,6 @@ class FNode {
     this._rotation = new THREE.Euler(0, 0, 0, "XYZ");
     this.args = args;
   }
-  /*
-  remove(child){
-    for(let i=0;i<this.children.length;i++)if(this.children[i]===child){
-      this.children=this.children.splice(i,1)
-      delete child.parent
-      break;
-    }
-  }
-  add(child){
-    if(child.parent)child.parent.remove(child)
-    this.children.push(child)
-    child.parent = this;
-  }
-  */
   size(x, y, z) {
     this._size.set(x, y, z);
     return this;
@@ -58,16 +44,7 @@ class FNode {
     this._rotation.set(x, y, z, order);
     return this;
   }
-  /*
-  get mesh() {
-    console.error('bla')
-  }
-  set mesh(src) {
-    console.error('bla')
-  }
-  */
-  getMesh(src) {
-    this.mesh = this.src = src;
+  getMesh() {
     this.src.updateMatrixWorld();
     let m = CSG.toMesh(this.csg, this.src.matrix, this.src.material);
     m.updateMatrixWorld();
@@ -75,12 +52,12 @@ class FNode {
     let b = new THREE.Mesh(m.geometry, backMaterial);
     m.add(b);
     b.renderOrder = 1;
-    return m;
-    return this.mesh;
+    m.userData.node = this;
+    return this.mesh = m;
   }
   setMesh(src) {
-    this.mesh = this.src = src;
-    this.csg = CSG.fromMesh(this.mesh);
+    this.src = src;
+    this.csg = CSG.fromMesh(this.src);
     return this;
   }
   
@@ -159,20 +136,10 @@ class FCAD {
           p.scale.copy(el._scale);
           p.rotation.copy(el._rotation);
           el.setMesh(p);
-          let mesh = (el._mesh = el.getMesh());
-          //debugger
-          if(!mesh.material)
-            debugger
-            
-          el._rotation = mesh.rotation;
-          el._position = mesh.position;
-          el._scale = mesh.scale;
-          
+          el._mesh = el.getMesh();
         } else doOp(el);
-        let m = el._mesh;
-        m.userData.node = el;
-        self.elements.push(m);
-        scene.add(m);
+        self.elements.push(el._mesh);
+        scene.add(el._mesh);
       }
       return self;
     }
