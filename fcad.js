@@ -58,7 +58,7 @@ class FNode {
     this._rotation.set(x, y, z, order);
     return this;
   }
-  /*
+  
   get mesh() {
     this.src.updateMatrixWorld();
     let m = CSG.toMesh(this.csg, this.src.matrix, this.src.material);
@@ -78,7 +78,7 @@ class FNode {
   }
   setMesh(src) {
     this.mesh = src;
-  }*/
+  }
   
 }
 
@@ -158,11 +158,11 @@ class FCAD {
           mesh.rotation.copy(el._rotation);
           if(!mesh.material)
             debugger
-            /*
+            
           el._rotation = mesh.rotation;
           el._position = mesh.position;
           el._scale = mesh.scale;
-          */
+          
         } else doOp(el);
         let m = el._mesh;
         m.userData.node = el;
