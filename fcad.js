@@ -27,7 +27,8 @@ class FNode {
     this._position = new THREE.Vector3(0, 0, 0);
     this._rotation = new THREE.Euler(0, 0, 0, "XYZ");
     this.args = args;
-  } /*
+  }
+  /*
   remove(child){
     for(let i=0;i<this.children.length;i++)if(this.children[i]===child){
       this.children=this.children.splice(i,1)
