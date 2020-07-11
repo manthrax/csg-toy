@@ -132,11 +132,9 @@ class FCAD {
       let t = el.type;
       el.csg = new CSG();
       if (t === "union") {
-        //debugger
-        if (el.args.length) el.src = el.args[0].getMesh();
-        for (let i = 0; i < el.args.length; i++) {
+        for (let i = 0; i < el.args.length; i++)el.args[i].src = el.args[i].getMesh();
+        for (let i = 0; i < el.args.length; i++)
           el.csg = el.csg.union(el.args[i].csg);
-        }
         el._mesh = el.getMesh();
         el._mesh.material = new THREE.MeshStandardMaterial();
       }
@@ -196,10 +194,10 @@ let u = union(b,s,c)
     let c = cylinder()
       .size(1, 1, 1)
       .position(0.15, 0.25, -0.35);
-    //let u = union(b, s, c);
+   //let u = union(s, c);
 
     this.update = () => {
-      return render(b, s, c).elements;
+      return render(b, s, c, union( s, c)).elements;
     };
     this.update();
 
