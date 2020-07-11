@@ -79,8 +79,10 @@ class Elements {
     m.material = mat;
   }
   clearSelection() {
-    this.forSelection((e)=>scene.attach(e))
-    this.deselect(e=>setMaterial()
+    this.forSelected((e)=>{
+      scene.attach(e);
+      if (e.userData.saveMaterial) e.material = e.userData.saveMaterial
+    })
     this.selected = {};
     this.selection = [];
   }
@@ -88,20 +90,21 @@ class Elements {
   deselect(idx) {
     let e = this.selected[idx];
     if (e) {
-      if (e.userData.saveMaterial) e.material = e.userData.saveMaterial;
       delete this.selected[idx];
       scene.attach(e);
+      this.selection = []
+      this.forEach((e,i)=>this.selected(i) && this.selection.push(e))      
       this.update();
     }
   }
 
-  update() {    
+  update() {
     if (this.selectedCount) {
-      transformGroup.position.set(0, 0, 0);
       this.forSelected(e=>scene.attach(e))
-      this.forSelected(e=>transformGroup.position.add(e.localToWorld(tv30.set(0, 0, 0))));
-      //debugger
+      transformGroup.position.set(0, 0, 0);
+      this.forSelected(e=>transformGroup.position.add(e.position));
       transformGroup.position.multiplyScalar(1 / this.selectedCount);
+      transformGroup.updateMatrixWorld()
       this.forSelected(e=>transformGroup.attach(e))
     }
   }
@@ -158,10 +161,10 @@ let mouseEvent = event => {
   if (event.type === "mousedown") {
     if (wasDragged) return;
     if (intersects.length) {
+      if(!event.shiftKey)
       let o = intersects[0].object;
       elements.forEach((e, i) => e === o && elements.select(i));
     } else if (!wasDragged){
-      debugger
       elements.clearSelection();
     }
   } else if (event.type === "mouseup") {
