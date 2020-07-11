@@ -58,6 +58,7 @@ class FNode {
     this._rotation.set(x, y, z, order);
     return this;
   }
+  /*
   get mesh() {
     this.src.updateMatrixWorld();
     let m = CSG.toMesh(this.csg, this.src.matrix, this.src.material);
@@ -77,7 +78,8 @@ class FNode {
   }
   setMesh(src) {
     this.mesh = src;
-  }
+  }*/
+  
 }
 
 class FCAD {
@@ -132,8 +134,8 @@ class FCAD {
       let t = el.type;
       el.csg = new CSG();
       if (t === "union") {
-        debugger
-        if(el.args.length){el.csg = el.args[0].csg.clone();el.src = el.args[0].getMesh()}
+        //debugger
+        if(el.args.length){el.src = el.args[0].getMesh(); el.csg = CSG.fromMesh(el.src);}
         for (let i = 1; i < el.args.length; i++)
           el.csg = el.csg.union(el.args[i].csg);
         el._mesh = el.getMesh();
@@ -186,8 +188,9 @@ let u = union(b,s,c)
     this.eval(f);
 */
     // debugger
+/*
     let s = sphere()
-      .size(1, 1, 1)
+      .size(1.5, 1.5, 1.5)
       .position(0.15, 0.25, -0.15);
     let b = box()
       .size(1, 1, 1)
@@ -196,9 +199,24 @@ let u = union(b,s,c)
       .size(1, 1, 1)
       .position(0.15, 0.25, -0.35);
    //let u = union(s, c);
-
+*/
+    
+    
+    let a = box()
+      .size(1, 1, 1)
+      .position(6.15, 0.25, 0.25);
+    
+    let b = box()
+      .size(1, 1, 1)
+      .position(4.15, 0.25, 0.25);
+    
+    let c = box()
+      .size(1, 1, 1)
+      .position(2.15, 0.25, 0.25);
+    
+    
     this.update = () => {
-      return render(b, s, c, union(s,c)).elements;
+      return render(a,b,c, union(a,b,c)).elements;
     };
     this.update();
 
