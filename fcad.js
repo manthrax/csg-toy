@@ -58,8 +58,16 @@ class FNode {
     this._rotation.set(x, y, z, order);
     return this;
   }
-  
+  /*
   get mesh() {
+    console.error('bla')
+  }
+  set mesh(src) {
+    console.error('bla')
+  }
+  */
+  getMesh(src) {
+    this.mesh = this.src = src;
     this.src.updateMatrixWorld();
     let m = CSG.toMesh(this.csg, this.src.matrix, this.src.material);
     m.updateMatrixWorld();
@@ -68,16 +76,12 @@ class FNode {
     m.add(b);
     b.renderOrder = 1;
     return m;
-  }
-  set mesh(src) {
-    this.csg = CSG.fromMesh((this.src = src));
-    return this;
-  }
-  getMesh(src) {
     return this.mesh;
   }
   setMesh(src) {
-    this.mesh = src;
+    this.mesh = this.src = src;
+    this.csg = CSG.fromMesh(this.mesh);
+    return this;
   }
   
 }
@@ -127,7 +131,7 @@ class FCAD {
       cylinder: mkprim(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16))
     };
 
-    /*
+    /* 
     var mesh = new THREE.Mesh( new THREE.ConvexBufferGeometry(points ));
     */
     let doOp = el => {
@@ -150,12 +154,13 @@ class FCAD {
         let el = e[i];
         let t = el.type;
         if (prims[t]) {
-          el.setMesh(prims[t].clone(true));
+          let p = prims[t].clone(true)
+          p.position.copy(el._position);
+          p.scale.copy(el._scale);
+          p.rotation.copy(el._rotation);
+          el.setMesh(p);
           let mesh = (el._mesh = el.getMesh());
           //debugger
-          mesh.position.copy(el._position);
-          mesh.scale.copy(el._scale);
-          mesh.rotation.copy(el._rotation);
           if(!mesh.material)
             debugger
             
