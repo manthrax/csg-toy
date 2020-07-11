@@ -132,6 +132,7 @@ class FCAD {
       let t = el.type;
       el.csg = new CSG();
       if (t === "union") {
+        debugger
         if(el.args.length){el.csg = el.args[0].csg.clone();el.src = el.args[0].getMesh()}
         for (let i = 1; i < el.args.length; i++)
           el.csg = el.csg.union(el.args[i].csg);

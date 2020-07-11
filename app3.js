@@ -176,7 +176,7 @@ let mouseEvent = event => {
       e.userData.node._rotation.copy(e.rotation)
       console.log(e.userData.node.type,e.userData.node._position)
     })
-    debugger
+    
     elements.set(fc.update());
     elements.forEach(enforceGround);
     elements.forSelected((e, i) => transformGroup.attach(e));
