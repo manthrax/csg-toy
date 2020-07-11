@@ -44,6 +44,8 @@ class FNode {
     this._rotation.set(x, y, z, order);
     return this;
   }
+  
+  
   getMesh() {
     this.src.updateMatrixWorld();
     let m = CSG.toMesh(this.csg, this.src.matrix, this.src.material);
@@ -55,12 +57,11 @@ class FNode {
     m.userData.node = this;
     return this.mesh = m;
   }
-  setMesh(src) {
+  setSrc(src) {
     this.src = src;
     this.csg = CSG.fromMesh(this.src);
-    return this;
+    return this.src;
   }
-  
 }
 
 class FCAD {
@@ -111,6 +112,7 @@ class FCAD {
     /* 
     var mesh = new THREE.Mesh( new THREE.ConvexBufferGeometry(points ));
     */
+    
     let doOp = el => {
       let t = el.type;
       el.csg = new CSG();
