@@ -161,11 +161,12 @@ let mouseEvent = event => {
   if (event.type === "mousedown") {
     if (wasDragged) return;
     if (intersects.length) {
-      if(!event.shiftKey)
+      if(!event.shiftKey)elements.clearSelection()
       let o = intersects[0].object;
       elements.forEach((e, i) => e === o && elements.select(i));
     } else if (!wasDragged){
-      elements.clearSelection();
+      if(event.buttons === 1)
+        elements.clearSelection();
     }
   } else if (event.type === "mouseup") {
     elements.forSelected((e, i) => {
@@ -181,7 +182,7 @@ let mouseEvent = event => {
       }
       transformGroup.attach(e);
     });
-    //elements.set(fc.update());
+    elements.set(fc.update());
   }
   tcontrol.enabled = tcontrol.visible = elements.selectedCount ? true : false;
 };
