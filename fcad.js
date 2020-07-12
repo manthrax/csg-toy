@@ -205,7 +205,7 @@ class FCAD {
       //};
     };
     try {
-        throw ""
+       //throw ""
       this.fromJSON(JSON.parse(localStorage.csgscene));
     } catch {
       mkDefault();

@@ -5,6 +5,43 @@ import { TransformControls } from "https://threejs.org/examples/jsm/controls/Tra
 import CSG from "./three-csg.js";
 import FCAD from "./fcad.js";
 import GridMaterial from "./grid-material.js";
+
+
+
+
+
+ "https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js"
+
+ "https://threejs.org/examples/jsm/loaders/HDRCubeTextureLoader.js"
+ "https://threejs.org/examples/jsm/loaders/RGBELoader.js"
+ "https://threejs.org/examples/jsm/pmrem/PMREMGenerator.js"
+ "https://threejs.org/examples/jsm/pmrem/PMREMCubeUVPacker.js"
+
+ "https://threejs.org/examples/jsm/postprocessing/EffectComposer.js"
+ "https://threejs.org/examples/jsm/postprocessing/RenderPass.js"
+ "https://threejs.org/examples/jsm/postprocessing/ShaderPass.js"
+ "https://threejs.org/examples/jsm/shaders/CopyShader.js"
+ "https://threejs.org/examples/jsm/shaders/LuminosityHighPassShader.js"
+ "https://threejs.org/examples/jsm/postprocessing/UnrealBloomPass.js"
+
+ "https://threejs.org/examples/jsm/shaders/SSAOShader.js"
+ "https://threejs.org/examples/jsm/postprocessing/SSAOPass.js"
+ "https://threejs.org/examples/jsm/shaders/FXAAShader.js"
+
+ "https://threejs.org/examples/jsm/math/SimplexNoise.js"
+
+
+
+
+
+
+
+
+
+
+
+
+
 let camera, scene, renderer, ocontrols;
 let aspect = window.innerWidth / window.innerHeight;
 camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
