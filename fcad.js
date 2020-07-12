@@ -1,22 +1,6 @@
 import * as THREE from "https://threejs.org/build/three.module.js";
-
 import CSG from "./three-csg.js";
-
 import { ConvexBufferGeometry } from "https://threejs.org/examples/jsm/geometries/ConvexGeometry.js";
-
-const backMaterial = new THREE.MeshStandardMaterial({
-  color: "red",
-  opacity: 0.5,
-  transparent: true,
-  side: THREE.BackSide,
-  depthWrite: false
-});
-const frontMaterial = new THREE.MeshStandardMaterial({
-  color: "blue",
-  opacity: 0.5,
-  transparent: true,
-  side: THREE.FrontSide
-});
 
 class FNode {
   constructor(fcad, type, args = []) {
@@ -44,43 +28,33 @@ class FNode {
     this._rotation.set(x, y, z, order);
     return this;
   }
-  
-/*
-getMesh() {
-    this.src.updateMatrixWorld();
-    let m = CSG.toMesh(this.csg, this.src.matrix, this.src.material);
-    m.updateMatrixWorld();
-    m.renderOrder = 2;
-    let b = new THREE.Mesh(m.geometry, backMaterial);
-    m.add(b);
-    b.renderOrder = 1;
-    m.userData.node = this;
-    return this.mesh = m;
-  }
-  setSrc(src) {
-    this.src = src;
-    this.csg = CSG.fromMesh(this.src);
-    return this.src;
-  }
-*/
 }
 
 class FCAD {
   constructor(scene) {
     this.scene = scene;
+    
     this.elements = [];
 
+    let mkprim = geom => {
+      let m = new THREE.Mesh(geom, frontMaterial);
+      return m;
+    };
+    let prims = {
+      sphere: mkprim(new THREE.SphereGeometry(0.25, 16, 16)),
+      box: mkprim(new THREE.BoxGeometry(0.5, 0.5, 0.5)),
+      cylinder: mkprim(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16))
+    };
+    function nnode(type, args) {
+      return new FNode(self, type, Array.prototype.slice.call(args));
+    }
+    
     let self = this;
     let vec3 = (x, y, z) => new THREE.Vector3(x, y, z);
     let sphere = () => new FNode(this, "sphere");
     let box = () => new FNode(this, "box");
     let cylinder = () => new FNode(this, "cylinder");
 
-    let args = () => Array.prototype.slice.call(arguments);
-    function nnode(type, args) {
-      return new FNode(self, type, Array.prototype.slice.call(args));
-    }
-    
     let mesh = function() {
       return nnode("mesh", arguments);
     };
@@ -99,22 +73,53 @@ class FCAD {
     let invert = function() {
       return nnode("invert", arguments);
     };
-    
-    
-    
-    let mkprim = geom => {
-      let m = new THREE.Mesh(geom, frontMaterial);
-      return m;
-    };
-    let prims = {
-      sphere: mkprim(new THREE.SphereGeometry(0.25, 16, 16)),
-      box: mkprim(new THREE.BoxGeometry(0.5, 0.5, 0.5)),
-      cylinder: mkprim(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16))
-    };
 
-    /* 
-    var mesh = new THREE.Mesh( new THREE.ConvexBufferGeometry(points ));
-    */
+    
+    
+    let a = box()
+      .size(1, 1, 1)
+      .position(6.15, 0.25, 0.25);
+    
+    let b = box()
+      .size(1, 1, 1)
+      .position(4.15, 0.25, 0.25);
+    
+    let c = box()
+      .size(1, 1, 1)
+      .position(2.15, 0.25, 0.25);
+    
+    function render() {
+    }
+    
+    this.update = () => {
+      return render(a,b,c, union(a,b,c)).elements;
+    };
+    this.update();
+
+  }
+}
+export default FCAD;
+
+const backMaterial = new THREE.MeshStandardMaterial({
+  color: "red",
+  opacity: 0.5,
+  transparent: true,
+  side: THREE.BackSide,
+  depthWrite: false
+});
+const frontMaterial = new THREE.MeshStandardMaterial({
+  color: "blue",
+  opacity: 0.5,
+  transparent: true,
+  side: THREE.FrontSide
+});
+/*
+
+
+
+     
+    //var mesh = new THREE.Mesh( new THREE.ConvexBufferGeometry(points ));
+    
     
     let doOp = el => {
       let t = el.type;
@@ -153,6 +158,24 @@ class FCAD {
       eval(str);
       return this;
     };
+
+getMesh() {
+    this.src.updateMatrixWorld();
+    let m = CSG.toMesh(this.csg, this.src.matrix, this.src.material);
+    m.updateMatrixWorld();
+    m.renderOrder = 2;
+    let b = new THREE.Mesh(m.geometry, backMaterial);
+    m.add(b);
+    b.renderOrder = 1;
+    m.userData.node = this;
+    return this.mesh = m;
+  }
+  setSrc(src) {
+    this.src = src;
+    this.csg = CSG.fromMesh(this.src);
+    return this.src;
+  }
+*/
     /*
     let f = `
 let s = sphere().size(1,1,1).position(.15, 0.25, -.15)
@@ -178,25 +201,6 @@ let u = union(b,s,c)
    //let u = union(s, c);
 */
     
-    
-    let a = box()
-      .size(1, 1, 1)
-      .position(6.15, 0.25, 0.25);
-    
-    let b = box()
-      .size(1, 1, 1)
-      .position(4.15, 0.25, 0.25);
-    
-    let c = box()
-      .size(1, 1, 1)
-      .position(2.15, 0.25, 0.25);
-    
-    
-    this.update = () => {
-      return render(a,b,c, union(a,b,c)).elements;
-    };
-    this.update();
-
     /*    render(
       sphere().size(1, 1, 1)
         .position(.15, 0.5, -.15),
@@ -206,6 +210,4 @@ let u = union(b,s,c)
       cylinder()
     );
 */
-  }
-}
-export default FCAD;
+    
