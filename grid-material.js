@@ -63,13 +63,13 @@ diffuseColor.a`)
       side:THREE.DoubleSide
     })
   }
-  static makeGrid(){
+  static makeGrid(material){
     
 
 let grid = new THREE.Mesh(
-  new THREE.PlaneGeometry(10.0015, 10.0015),
+  new THREE.PlaneGeometry(20.0015, 20.0015),
   new GridMaterial(
-    new THREE.MeshStandardMaterial({
+    material || new THREE.MeshStandardMaterial({
       map: new THREE.TextureLoader().load(
         "https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fmandala.jpg?v=1594201375330"
       ),

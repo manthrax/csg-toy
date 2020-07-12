@@ -79,7 +79,9 @@ let enforceGround = mesh => {
   par.attach(mesh)
 };
 
-scene.add(GridMaterial.makeGrid());
+let gridmat = Environment.mkMat(0x20202)
+gridmat.transparent = true;
+scene.add(GridMaterial.makeGrid(gridmat));
 
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();

@@ -204,7 +204,7 @@ class Environment {
       mkMat("grey")
     );
     scene.add(ground);
-    ground.position.y -= .6;
+    ground.position.y -= .51;
     ground.name = "ground";
 
     ground.material.roughnessMap = ground.material.roughnessMap.clone();
