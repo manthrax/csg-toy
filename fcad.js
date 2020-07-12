@@ -29,7 +29,9 @@ class FNode {
     return this;
   }
   getMesh() {
-    return Prims[this.type](this);
+    let p = Prims[this.type](this)
+        p.updateMatrixWorld();
+    return p
   }
 }
 
@@ -58,11 +60,11 @@ class Prims {
   static cylinder(e, material) {
     return this.mesh(e, new THREE.CylinderGeometry(0.5, 0.5, 1, 16), material);
   }
-  static union(e) {
+  static operation(o,e){
+    
     if (e.args.length) {
       //debugger
       let p = e.args[0].getMesh();//Prims.empty(e, csgMaterial);
-      
       var bspA = CSG.fromMesh(p);
       e.args.forEach((b, i) => {
         if (!i) return;
@@ -74,14 +76,17 @@ class Prims {
     }
     return Prims.sphere(e, csgMaterial);
   }
+  static union(e) {
+    return Prims.operation('union',e)
+  }
   static subtract(e) {
-    return Prims.sphere(e, csgMaterial);
+    return Prims.operation('subtract',e)
   }
   static intersect(e) {
-    return Prims.sphere(e, csgMaterial);
+    return Prims.operation('intersect',e)
   }
   static invert(e) {
-    return Prims.sphere(e, csgMaterial);
+    return Prims.operation('invert',e)
   }
 }
 
@@ -189,14 +194,18 @@ class FCAD {
         .size(1, 1, 1)
         .position(3, 0.5, 2);
 
-      let u = union(a, b);
+      let d = cylinder()
+        .size(1, 1, 1)
+        .position(5, 0.5, 2);
+
+      let u = subtract(a, b, c, d);
 
       //this.update = () => {
       //  return render(a, b, c, u).elements;
       //};
     };
     try {
-        //throw ""
+        throw ""
       this.fromJSON(JSON.parse(localStorage.csgscene));
     } catch {
       mkDefault();
