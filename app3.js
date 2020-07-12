@@ -38,7 +38,7 @@ catch
 
 let environment = new Environment(renderer,scene,camera)
 
-
+/*
 const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 1, 1);
 const backMaterial = new THREE.MeshStandardMaterial({
   color: "white",
@@ -53,6 +53,12 @@ const frontMaterial = new THREE.MeshStandardMaterial({
   transparent: true,
   side: THREE.FrontSide
 });
+*/
+
+let frontMaterial = Environment.mkMat('yellow')
+frontMaterial.transparent = true;
+frontMaterial.opacity = .25;
+
 
 const light = new THREE.PointLight("white", 0.5);
 light.position.set(20, 30, 40);
@@ -234,6 +240,7 @@ let resizeFn = event => {
   camera.updateProjectionMatrix();
   renderer.setSize(width, height);
 };
+
 resizeFn();
 window.addEventListener("resize", resizeFn, false)
 
