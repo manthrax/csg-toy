@@ -53,6 +53,10 @@ class Prims {
     return this.mesh(e, new THREE.CylinderGeometry(0.5, 0.5, 1, 16),material);
   }
   static union(e) {
+    
+    if(e.args.length){
+      let p = Prims.empty(e)
+    }
     return Prims.sphere(e,csgMaterial);
   }
   static subtract(e) {
@@ -128,7 +132,7 @@ class FCAD {
     }
 
     this.update = () => {
-      return render(a, b, c, union(a, b, c)).elements;
+      return render(a, b, c, union(a, b)).elements;
     };
     this.update();
   }
