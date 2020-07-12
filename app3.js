@@ -183,17 +183,48 @@ let transpMat=(color)=>{
 
 fc = new FCAD(cadScene,Environment.mkMat('white'),transpMat('red'),transpMat('blue'));
 
+
 tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
   wasDragged = event.value;
   if (!wasDragged) {
+    console.log("Dragging");
   } else {
     console.log("Drag");
     //setElements(fc.update())
   }
 });
 
+
+
 elements.set(fc.update());
+
+let updateCSG=()=>{
+  
+    elements.forSelected((e, i) => {
+      scene.attach(e);
+      e.updateMatrixWorld();
+      e.userData.node._position.copy(e.position)
+      e.userData.node._scale.copy(e.scale)
+      e.userData.node._rotation.copy(e.rotation)
+      //console.log(e.userData.node.type,e.userData.node._position)
+    })
+    
+    elements.set(fc.update());
+    elements.forEach(enforceGround);
+    elements.forSelected((e, i) => transformGroup.attach(e));
+    elements.update()
+}
+
+
+tcontrol.addEventListener("objectChange", event => {
+    console.log("OC")
+    if(elements.selectedCount ){
+      updateCSG()
+    }
+})
+
+
 
 let mouseEvent = event => {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -213,19 +244,8 @@ let mouseEvent = event => {
         elements.clearSelection();
     }
   } else if (event.type === "mouseup") {
-    elements.forSelected((e, i) => {
-      scene.attach(e);
-      e.updateMatrixWorld();
-      e.userData.node._position.copy(e.position)
-      e.userData.node._scale.copy(e.scale)
-      e.userData.node._rotation.copy(e.rotation)
-      //console.log(e.userData.node.type,e.userData.node._position)
-    })
-    
-    elements.set(fc.update());
-    elements.forEach(enforceGround);
-    elements.forSelected((e, i) => transformGroup.attach(e));
-    elements.update()
+    updateCSG()
+  }else if(event.type==="mousemove"){
   }
   tcontrol.enabled = tcontrol.visible = elements.selectedCount ? true : false;
 };
