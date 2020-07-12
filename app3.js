@@ -256,6 +256,19 @@ window.addEventListener(
     if (e.shiftKey) tcontrol.setMode("translate");
     if (e.ctrlKey) tcontrol.setMode("rotate");
     if (e.altKey) tcontrol.setMode("scale");
+    if (e.code === 'KeyW'){
+      scene.traverse((e)=>{
+        if(e.isMesh){
+          if(e.material.userData.saveWireframe===undefined){
+            e.material.userData.saveWireframe = e.material.wireframe
+            e.material.wireframe = true;
+          }else{            
+            e.material.wireframe = e.material.userData.saveWireframe
+            delete e.material.userData.saveWireframe;
+          }
+        }
+      })
+    }
   },
   false
 );
