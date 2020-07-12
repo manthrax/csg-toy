@@ -47,19 +47,23 @@ let aspect = window.innerWidth / window.innerHeight;
 camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
 
 let lastSavedPosition=new THREE.Vector3(2, 1.5, 2)
-try{
-   camera.position.copy(JSON.parse(localStorage.cameraPosition)) 
-}
-catch{
-  camera.position.set(lastSavedPosition);
-}
+
 scene = new THREE.Scene();
 renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setClearColor(0x101010);
 document.body.appendChild(renderer.domElement);
 ocontrols = new OrbitControls(camera, renderer.domElement);
 //ocontrols.autoRotate = true;
-
+try{
+  throw ''
+//   camera.position.copy(JSON.parse(localStorage.cameraPosition)) 
+//   ocontrols.target.copy(JSON.parse(localStorage.controlsTarget)) 
+}
+catch{
+  camera.position.copy(lastSavedPosition);
+  ocontrols.target.set(0,0,0) 
+}
+debugger
 const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 1, 1);
 const backMaterial = new THREE.MeshStandardMaterial({
   color: "white",
@@ -219,7 +223,7 @@ let mouseEvent = event => {
       e.userData.node._position.copy(e.position)
       e.userData.node._scale.copy(e.scale)
       e.userData.node._rotation.copy(e.rotation)
-      console.log(e.userData.node.type,e.userData.node._position)
+      //console.log(e.userData.node.type,e.userData.node._position)
     })
     
     elements.set(fc.update());
@@ -263,6 +267,7 @@ renderer.setAnimationLoop(() => {
   if(!lastSavedPosition.equals(camera.position)){
     lastSavedPosition.copy(camera.position)
     localStorage.cameraPosition=JSON.stringify(camera.position)
+    localStorage.controlsTarget = JSON.stringify(ocontrols.target) 
   }
 });
 

@@ -61,7 +61,6 @@ class Prims {
     return this.mesh(e, new THREE.CylinderGeometry(0.5, 0.5, 1, 16), material);
   }
   static operation(o,e){
-    
     if (e.args.length) {
       //debugger
       let p = e.args[0].getMesh();//Prims.empty(e, csgMaterial);
@@ -71,7 +70,7 @@ class Prims {
         let bspB = CSG.fromMesh(b.getMesh());
         bspA = bspA[o](bspB);
       });
-      console.log(bspA)
+      //console.log(bspA)
       return Prims.bindNodeToMesh(e, CSG.toMesh(bspA, p.matrix, csgMaterial));
     }
     return Prims.sphere(e, csgMaterial);
@@ -204,8 +203,9 @@ class FCAD {
       //  return render(a, b, c, u).elements;
       //};
     };
+    debugger
     try {
-       //throw ""
+      throw ""
       this.fromJSON(JSON.parse(localStorage.csgscene));
     } catch {
       mkDefault();
