@@ -83,7 +83,7 @@ class Prims {
   }
 }
 
-
+let empty = new THREE.Object3D()
 class FCAD {
   toJSON()
   {
@@ -97,13 +97,23 @@ class FCAD {
         n.iargs=ids;
       }
     })
-    
     this.nodes.forEach(n=>{
-      out.push({name:n.name||('nd'+n.id),args})
+      let o={}
+      o.type=n.type
+      n.name && (o.name = n.name);
+      n.args && (o.args=n.iargs);
+      (!n._position.equals(empty.position)) && (o.position=n._position);
+      (!n._scale.equals(empty.scale)) && (o.scale=n._scale);
+      (!n._rotation.equals(empty.rotation)) && (o.rotation=n.rotation);
+      out.push(o)
     })
+    return out;
   }
   fromJSON(jd){
-    
+    for(let i=0;i<js.length;i++){
+      let e=js[i]
+      
+    }
   }
   constructor(scene) {
     this.scene = scene;
@@ -120,9 +130,9 @@ class FCAD {
 
     let self = this;
     let vec3 = (x, y, z) => new THREE.Vector3(x, y, z);
-    let sphere = () => new FNode(this, "sphere");
-    let box = () => new FNode(this, "box");
-    let cylinder = () => new FNode(this, "cylinder");
+    let sphere = () => addNode(new FNode(this, "sphere"));
+    let box = () => addNode(new FNode(this, "box"));
+    let cylinder = () => addNode(new FNode(this, "cylinder"));
 
     let mesh = function() {
       return nnode("mesh", arguments);
@@ -170,6 +180,7 @@ class FCAD {
       return render(a, b, c, u ).elements;
     };
     this.update();
+    console.log(this.toJSON())
   }
 }
 export default FCAD;
