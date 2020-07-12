@@ -1,3 +1,4 @@
+import * as THREE from "https://threejs.org/build/three.module.js";
 import {CSS3DRenderer} from "https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js";
 
 import {HDRCubeTextureLoader} from "https://threejs.org/examples/jsm/loaders/HDRCubeTextureLoader.js";
@@ -19,7 +20,7 @@ import {FXAAShader} from "https://threejs.org/examples/jsm/shaders/FXAAShader.js
 import {SimplexNoise} from "https://threejs.org/examples/jsm/math/SimplexNoise.js";
 
 class Environment {
-  constructor(renderer,scene) {
+  constructor(renderer,scene,camera) {
     let ssaoPass;
     let fxaaPass;
     function setupPostProcessing() {
@@ -37,12 +38,12 @@ class Environment {
 
       var renderScene = new RenderPass(scene, camera);
 
-      let composer = new THREE.EffectComposer(renderer);
+      let composer = new EffectComposer(renderer);
       composer.setSize(window.innerWidth, window.innerHeight);
 
       composer.addPass(renderScene);
 
-      fxaaPass = new THREE.ShaderPass(THREE.FXAAShader);
+      fxaaPass = new ShaderPass(FXAAShader);
 
       renderer.setPixelRatio(1);
 
@@ -50,9 +51,9 @@ class Environment {
 
       let width = window.innerWidth;
       let height = window.innerHeight;
-      let copyPass = new THREE.ShaderPass(THREE.CopyShader);
+      let copyPass = new ShaderPass(THREE.CopyShader);
 
-      ssaoPass = new THREE.SSAOPass(scene, camera, width, height);
+      ssaoPass = new SSAOPass(scene, camera, width, height);
       ssaoPass.minDistance = 0.005;
       ssaoPass.maxDistance = 0.28;
       ssaoPass.kernelRadius = 10.1;
@@ -81,7 +82,7 @@ class Environment {
     function loadHDR(dir) {
       var hdrCubeRenderTarget;
       var hdrCubeMap;
-      var hdrUrls = [
+      var NhdrUrls = [
         "px.hdr",
         "nx.hdr",
         "py.hdr",
@@ -89,9 +90,17 @@ class Environment {
         "pz.hdr",
         "nz.hdr"
       ];
-      dir = dir || "san_guiseppe_bridge";
-      hdrCubeMap = new THREE.HDRCubeTextureLoader()
-        .setPath("./assets/" + dir + "/")
+      var hdrUrls = [
+        "https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fpx.hdr?v=1594535462236",
+        "https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fnx.hdr?v=1594535462924",
+        "https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fpy.hdr?v=1594535455937",
+        "https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fny.hdr?v=1594535464928",
+        "https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fpz.hdr?v=1594535459665",
+        "https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fnz.hdr?v=1594535458938"
+      ];
+      dir = dir || "";//"san_guiseppe_bridge";
+      hdrCubeMap = new HDRCubeTextureLoader()
+        //.setPath("./assets/" + dir + "/")
         .load(THREE.UnsignedByteType, hdrUrls, function() {
           var pmremGenerator = new THREE.PMREMGenerator(hdrCubeMap);
           pmremGenerator.update(renderer);

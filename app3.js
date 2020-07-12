@@ -33,7 +33,7 @@ catch{
 }
 
 
-new Environment(renderer,scene)
+new Environment(renderer,scene,camera)
 
 
 const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 1, 1);
