@@ -85,6 +85,26 @@ class Prims {
 
 
 class FCAD {
+  toJSON()
+  {
+    let id=0;
+    this.nodes.forEach(n=>n.id=id++)
+    let out=[]
+    this.nodes.forEach(n=>{
+      if(n.args){
+        let ids=[]
+        n.args.forEach((a,i)=>ids.push(a.id))
+        n.iargs=ids;
+      }
+    })
+    
+    this.nodes.forEach(n=>{
+      out.push({name:n.name||('nd'+n.id),args})
+    })
+  }
+  fromJSON(jd){
+    
+  }
   constructor(scene) {
     this.scene = scene;
     this.nodes = [];
@@ -136,6 +156,7 @@ class FCAD {
       .position(3,.5,2);
 
     let u = union(a, b)
+    
     function render() {
       self.elements = [];
       for (let a = arguments, i = 0; i < a.length; i++) {
@@ -175,7 +196,9 @@ const csgMaterial = new THREE.MeshStandardMaterial({
 });
 /*
 
-
+[
+  {name:'a',type:'sphere'}
+]
 
      
     //var mesh = new THREE.Mesh( new THREE.ConvexBufferGeometry(points ));
