@@ -43,26 +43,26 @@ class Prims {
     m.userData.node = e;
     return m
   }
-  static sphere(e) {
-    return this.mesh(e, new THREE.SphereGeometry(.5, 16, 16));
+  static sphere(e,material) {
+    return this.mesh(e, new THREE.SphereGeometry(.5, 16, 16),material);
   }
-  static box(e) {
-    return this.mesh(e, new THREE.BoxGeometry(1,1,1));
+  static box(e,material) {
+    return this.mesh(e, new THREE.BoxGeometry(1,1,1),material);
   }
-  static cylinder(e) {
-    return this.mesh(e, new THREE.CylinderGeometry(0.5, 0.5, 1, 16));
+  static cylinder(e,material) {
+    return this.mesh(e, new THREE.CylinderGeometry(0.5, 0.5, 1, 16),material);
   }
   static union(e) {
-    return Prims.sphere(e);
+    return Prims.sphere(e,csgMaterial);
   }
   static subtract(e) {
-    return Prims.sphere(e);
+    return Prims.sphere(e,csgMaterial);
   }
   static intersect(e) {
-    return Prims.sphere(e);
+    return Prims.sphere(e,csgMaterial);
   }
   static invert(e) {
-    return Prims.sphere(e);
+    return Prims.sphere(e,csgMaterial);
   }
 }
 
@@ -108,15 +108,15 @@ class FCAD {
 
     let a = box()
       .size(1, 1, 1)
-      .position(2, 0.25, 2);
+      .position(1,.5,1);
 
     let b = cylinder()
       .size(1, 1, 1)
-      .position(3, 0.25, 3);
+      .position(2,.5,2);
 
     let c = sphere()
       .size(1, 1, 1)
-      .position(-3, 0.25 ,-3);
+      .position(3,.5,2);
 
     function render() {
       self.elements = [];
@@ -146,6 +146,13 @@ const frontMaterial = new THREE.MeshStandardMaterial({
   color: "blue",
   opacity: 0.5,
   transparent: true,
+  side: THREE.FrontSide
+});
+
+const csgMaterial = new THREE.MeshStandardMaterial({
+  color: "white",
+  opacity: 0.9,
+  transparent: false,
   side: THREE.FrontSide
 });
 /*
