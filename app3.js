@@ -108,7 +108,6 @@ class Elements {
       this.forSelected(e=>transformGroup.attach(e))
     }
   }
-
   select(idx) {
     let e = this.elements[idx];
     this.selected[idx] = e;
@@ -122,7 +121,7 @@ class Elements {
     this.elements = e.slice(0);
     this.selection = [];
     this.forEach((s, i) => {
-      scene.attach(s);
+      scene.attach(s.getMesh());
       if (this.selected[i]) this.select(i);
     });
     this.update();

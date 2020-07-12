@@ -28,25 +28,42 @@ class FNode {
     this._rotation.set(x, y, z, order);
     return this;
   }
+  
+  getMesh(){
+    let prim = FCad.prims[]
+    if(FCad)
+    return new THREE.Mesh(new THREE.)
+  }  
 }
+
+FNode.prims = (function(){
+  let mkprim = geom => {
+    let m = new THREE.Mesh(geom, frontMaterial);
+    return m;
+  }    
+  return {
+    sphere: mkprim(new THREE.SphereGeometry(0.25, 16, 16)),
+    box: mkprim(new THREE.BoxGeometry(0.5, 0.5, 0.5)),
+    cylinder: mkprim(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16))
+  }
+})()
+
 
 class FCAD {
   constructor(scene) {
     this.scene = scene;
     
+    this.nodes = [];
     this.elements = [];
 
-    let mkprim = geom => {
-      let m = new THREE.Mesh(geom, frontMaterial);
-      return m;
-    };
-    let prims = {
-      sphere: mkprim(new THREE.SphereGeometry(0.25, 16, 16)),
-      box: mkprim(new THREE.BoxGeometry(0.5, 0.5, 0.5)),
-      cylinder: mkprim(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16))
-    };
+    let prims = 
+    
+    let addNode=(node)=>{
+      this.nodes.push(node)
+      return node
+    }
     function nnode(type, args) {
-      return new FNode(self, type, Array.prototype.slice.call(args));
+      return addNode(new FNode(self, type, Array.prototype.slice.call(args)));
     }
     
     let self = this;
@@ -89,6 +106,12 @@ class FCAD {
       .position(2.15, 0.25, 0.25);
     
     function render() {
+      self.elements=[]
+      for (let a = arguments, i = 0; i < a.length; i++) {
+        let n=a[i]
+        self.elements.push(n.getMesh())
+      }
+      return self;
     }
     
     this.update = () => {
