@@ -112,7 +112,12 @@ class FCAD {
   fromJSON(js){
     js.forEach((e,i)=>this.nodes.push(new FNode(this,e.type)))
     for(let i=0;i<js.length;i++)
-    js.forEach((e,i)=>e.args && e.args.forEach((a,ai)=>e.args[ai]=this.nodes[a]))
+    js.forEach((e,i)=>{
+      e.args && e.args.forEach((a,ai)=>e.args[ai]=this.nodes[a])
+      e.position && this.nodes[i]._position.copy(e.position)
+      e.scale && this.nodes[i]._scale.copy(e.scale)
+      e.rotation && this.nodes[i]._rotation.copy(e.rotation)
+    })
   }
   
   
@@ -131,8 +136,19 @@ class FCAD {
     function nnode(type, args) {
       return addNode(new FNode(self, type, Array.prototype.slice.call(args)));
     }
-let mkDefault=()=>{
+    
+    
     let self = this;
+    function render() {
+      self.elements = [];
+      for (let a = arguments, i = 0; i < a.length; i++) {
+        let n = a[i];
+        self.elements.push(n.getMesh());
+      }
+      return self;
+    }
+    
+let mkDefault=()=>{
     let vec3 = (x, y, z) => new THREE.Vector3(x, y, z);
     let sphere = () => addNode(new FNode(this, "sphere"));
     let box = () => addNode(new FNode(this, "box"));
@@ -171,25 +187,26 @@ let mkDefault=()=>{
 
     let u = union(a, b)
     
-    function render() {
-      self.elements = [];
-      for (let a = arguments, i = 0; i < a.length; i++) {
-        let n = a[i];
-        self.elements.push(n.getMesh());
-      }
-      return self;
-    }
 
     this.update = () => {
       return render(a, b, c, u ).elements;
     };
 }
-
-this.update=()=>{
-      return this;}
-
-    this.update();
+try
+{
+  //throw ""
+  this.fromJSON(JSON.parse(localStorage.csgscene))
+    this.update = () => {
+      return render( ...this.nodes ).elements;
+    };
+}
+catch
+{
+  mkDefault();//this.update=()=>this.elements
+}
+    this.update(); 
     console.log(this.toJSON())
+    localStorage.csgscene = JSON.stringify(this.toJSON())
   }
 }
 export default FCAD;
