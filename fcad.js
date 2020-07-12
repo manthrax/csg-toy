@@ -45,8 +45,8 @@ class FNode {
     return this;
   }
   
-  
-  getMesh() {
+/*
+getMesh() {
     this.src.updateMatrixWorld();
     let m = CSG.toMesh(this.csg, this.src.matrix, this.src.material);
     m.updateMatrixWorld();
@@ -62,6 +62,7 @@ class FNode {
     this.csg = CSG.fromMesh(this.src);
     return this.src;
   }
+*/
 }
 
 class FCAD {
@@ -79,7 +80,7 @@ class FCAD {
     function nnode(type, args) {
       return new FNode(self, type, Array.prototype.slice.call(args));
     }
-    //new FNode(this, "mesh", args());
+    
     let mesh = function() {
       return nnode("mesh", arguments);
     };
@@ -98,7 +99,9 @@ class FCAD {
     let invert = function() {
       return nnode("invert", arguments);
     };
-
+    
+    
+    
     let mkprim = geom => {
       let m = new THREE.Mesh(geom, frontMaterial);
       return m;
