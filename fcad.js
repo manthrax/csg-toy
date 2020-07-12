@@ -203,7 +203,7 @@ class FCAD {
       //  return render(a, b, c, u).elements;
       //};
     };
-    debugger
+    
     try {
       throw ""
       this.fromJSON(JSON.parse(localStorage.csgscene));

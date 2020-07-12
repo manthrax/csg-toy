@@ -63,7 +63,7 @@ catch{
   camera.position.copy(lastSavedPosition);
   ocontrols.target.set(0,0,0) 
 }
-debugger
+
 const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 1, 1);
 const backMaterial = new THREE.MeshStandardMaterial({
   color: "white",
@@ -92,7 +92,7 @@ scene.add(tcontrol);
 let tbox = new THREE.Box3();
 let enforceGround = mesh => {
   tbox.setFromObject(mesh);
-  if (tbox.min.y < 0) mesh.position.y -= tbox.min.y;
+  if (tbox.min.y < 0) mesh.position.sub(mesh.worldToLocal(tv30.set(0,tbox.min.y,0)))
 };
 
 scene.add(GridMaterial.makeGrid());
@@ -271,7 +271,7 @@ renderer.setAnimationLoop(() => {
   }
 });
 
-for (let i = 0; i < elements.length; i++) enforceGround(elements[i]);
+//for (let i = 0; i < elements.length; i++) enforceGround(elements[i]);
 
 /*
 const mesh = new THREE.Mesh(geometry, backMaterial);
