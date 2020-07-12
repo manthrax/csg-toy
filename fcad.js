@@ -28,37 +28,59 @@ class FNode {
     this._rotation.set(x, y, z, order);
     return this;
   }
-  getMesh(){
-    return Prims[this.type]()
-  }  
+
+  getMesh() {
+    return Prims[this.type](this);
+  }
 }
 
-class Prims{
- static mesh (geometry,material = frontMaterial) {return new THREE.Mesh(geometry, material)}
- static sphere(){ return this.mesh(new THREE.SphereGeometry(0.25, 16, 16))}
- static box(){ return this.mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5))}
- static cylinder(){ return this.mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16))}
- static union(){}
+class Prims {
+  static mesh(e, geometry, material = frontMaterial) {
+    let m = new THREE.Mesh(geometry, material);
+    m.position.copy(e.position)
+    m.scale.copy(e.scale)
+    m.rotation.copy(e.rotation)
+    m.userData.node = e;
+    return m
+  }
+  static sphere(e) {
+    return this.mesh(e, new THREE.SphereGeometry(0.25, 16, 16));
+  }
+  static box(e) {
+    return this.mesh(e, new THREE.BoxGeometry(0.5, 0.5, 0.5));
+  }
+  static cylinder(e) {
+    return this.mesh(e, new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16));
+  }
+  static union(e) {
+    return Prims.sphere(e);
+  }
+  static subtract(e) {
+    return Prims.sphere(e);
+  }
+  static intersect(e) {
+    return Prims.sphere(e);
+  }
+  static invert(e) {
+    return Prims.sphere(e);
+  }
 }
 
 
 class FCAD {
   constructor(scene) {
     this.scene = scene;
-    
     this.nodes = [];
     this.elements = [];
 
-    let prims = 
-    
-    let addNode=(node)=>{
-      this.nodes.push(node)
-      return node
-    }
+    let addNode = node => {
+      this.nodes.push(node);
+      return node;
+    };
     function nnode(type, args) {
       return addNode(new FNode(self, type, Array.prototype.slice.call(args)));
     }
-    
+
     let self = this;
     let vec3 = (x, y, z) => new THREE.Vector3(x, y, z);
     let sphere = () => new FNode(this, "sphere");
@@ -82,36 +104,33 @@ class FCAD {
     };
     let invert = function() {
       return nnode("invert", arguments);
-    };
+    }
 
-    
-    
     let a = box()
       .size(1, 1, 1)
       .position(6.15, 0.25, 0.25);
-    
+
     let b = box()
       .size(1, 1, 1)
       .position(4.15, 0.25, 0.25);
-    
+
     let c = box()
       .size(1, 1, 1)
       .position(2.15, 0.25, 0.25);
-    
+
     function render() {
-      self.elements=[]
+      self.elements = [];
       for (let a = arguments, i = 0; i < a.length; i++) {
-        let n=a[i]
-        self.elements.push(n.getMesh())
+        let n = a[i];
+        self.elements.push(n.getMesh());
       }
       return self;
     }
-    
+
     this.update = () => {
-      return render(a,b,c, union(a,b,c)).elements;
+      return render(a, b, c, union(a, b, c)).elements;
     };
     this.update();
-
   }
 }
 export default FCAD;
@@ -192,7 +211,7 @@ getMesh() {
     return this.src;
   }
 */
-    /*
+/*
     let f = `
 let s = sphere().size(1,1,1).position(.15, 0.25, -.15)
 let b = box().size(1,1,1).position(.15, 0.25, .25)
@@ -203,7 +222,7 @@ let u = union(b,s,c)
 
     this.eval(f);
 */
-    // debugger
+// debugger
 /*
     let s = sphere()
       .size(1.5, 1.5, 1.5)
@@ -216,8 +235,8 @@ let u = union(b,s,c)
       .position(0.15, 0.25, -0.35);
    //let u = union(s, c);
 */
-    
-    /*    render(
+
+/*    render(
       sphere().size(1, 1, 1)
         .position(.15, 0.5, -.15),
       box()
@@ -226,4 +245,3 @@ let u = union(b,s,c)
       cylinder()
     );
 */
-    
