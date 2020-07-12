@@ -35,13 +35,20 @@ class FNode {
 }
 
 class Prims {
-  static mesh(e, geometry, material = frontMaterial) {
-    let m = new THREE.Mesh(geometry, material);
+  static bindNodeToMesh(e,m){
     m.position.copy(e._position)
     m.scale.copy(e._scale)
     m.rotation.copy(e._rotation)
     m.userData.node = e;
     return m
+  }
+  static mesh(e, geometry, material = frontMaterial) {
+    let m = new THREE.Mesh(geometry, material);
+    Prims.bindNodeToMesh(e,m)
+    return m
+  }
+  static empty(e,material) {
+    return this.mesh(e, new THREE.Geometry(),material);
   }
   static sphere(e,material) {
     return this.mesh(e, new THREE.SphereGeometry(.5, 16, 16),material);
@@ -53,9 +60,15 @@ class Prims {
     return this.mesh(e, new THREE.CylinderGeometry(0.5, 0.5, 1, 16),material);
   }
   static union(e) {
-    
     if(e.args.length){
-      let p = Prims.empty(e)
+      //debugger
+      let p = Prims.empty(e,csgMaterial)
+      var bspA = CSG.fromMesh( p );
+      e.args.forEach((b,i)=>{if(!i)return
+        let bspB = CSG.fromMesh( b.getMesh() );
+        bspA = bspA.union(bspB)
+      })
+      return Prims.bindNodeToMesh(e,CSG.toMesh( bspA, p.matrix,csgMaterial));
     }
     return Prims.sphere(e,csgMaterial);
   }
@@ -122,6 +135,7 @@ class FCAD {
       .size(1, 1, 1)
       .position(3,.5,2);
 
+    let u = union(a, b)
     function render() {
       self.elements = [];
       for (let a = arguments, i = 0; i < a.length; i++) {
@@ -132,7 +146,7 @@ class FCAD {
     }
 
     this.update = () => {
-      return render(a, b, c, union(a, b)).elements;
+      return render(a, b, c, u ).elements;
     };
     this.update();
   }
