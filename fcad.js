@@ -60,13 +60,16 @@ class Prims {
   }
   static union(e) {
     if (e.args.length) {
-      let p = Prims.empty(e, csgMaterial);
-      var bspA = CSG.fromMesh(e.args[0].getMesh());
+      //debugger
+      let p = e.args[0].getMesh();//Prims.empty(e, csgMaterial);
+      
+      var bspA = CSG.fromMesh(p);
       e.args.forEach((b, i) => {
         if (!i) return;
         let bspB = CSG.fromMesh(b.getMesh());
         bspA = bspA.union(bspB);
       });
+      console.log(bspA)
       return Prims.bindNodeToMesh(e, CSG.toMesh(bspA, p.matrix, csgMaterial));
     }
     return Prims.sphere(e, csgMaterial);
@@ -110,13 +113,13 @@ class FCAD {
   fromJSON(js) {
     js.forEach((e, i) => this.nodes.push(new FNode(this, e.type)));
     js.forEach((e, i) => {
-      let n = 
+      let n = this.nodes[i]
       e.args && e.args.forEach((a, ai) => (e.args[ai] = this.nodes[a]));
-      e.args && (this.nodes[i].args=e.args)
+      e.args && (n.args=e.args)
       //debugger
-      e.position && this.nodes[i]._position.copy(e.position);
-      e.scale && this.nodes[i]._scale.copy(e.scale);
-      e.rotation && this.nodes[i]._rotation.copy(e.rotation);
+      e.position && n._position.copy(e.position);
+      e.scale && n._scale.copy(e.scale);
+      e.rotation && n._rotation.copy(e.rotation);
     });
   }
 
@@ -178,7 +181,7 @@ class FCAD {
         .size(1, 1, 1)
         .position(1, 0.5, 1);
 
-      let b = cylinder()
+      let b = box()
         .size(1, 1, 1)
         .position(2, 0.5, 2);
 
@@ -193,7 +196,7 @@ class FCAD {
       //};
     };
     try {
-        throw ""
+        //throw ""
       this.fromJSON(JSON.parse(localStorage.csgscene));
     } catch {
       mkDefault();
