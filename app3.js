@@ -6,39 +6,7 @@ import CSG from "./three-csg.js";
 import FCAD from "./fcad.js";
 import GridMaterial from "./grid-material.js";
 
-
-
-
-
- "https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js"
-
- "https://threejs.org/examples/jsm/loaders/HDRCubeTextureLoader.js"
- "https://threejs.org/examples/jsm/loaders/RGBELoader.js"
- "https://threejs.org/examples/jsm/pmrem/PMREMGenerator.js"
- "https://threejs.org/examples/jsm/pmrem/PMREMCubeUVPacker.js"
-
- "https://threejs.org/examples/jsm/postprocessing/EffectComposer.js"
- "https://threejs.org/examples/jsm/postprocessing/RenderPass.js"
- "https://threejs.org/examples/jsm/postprocessing/ShaderPass.js"
- "https://threejs.org/examples/jsm/shaders/CopyShader.js"
- "https://threejs.org/examples/jsm/shaders/LuminosityHighPassShader.js"
- "https://threejs.org/examples/jsm/postprocessing/UnrealBloomPass.js"
-
- "https://threejs.org/examples/jsm/shaders/SSAOShader.js"
- "https://threejs.org/examples/jsm/postprocessing/SSAOPass.js"
- "https://threejs.org/examples/jsm/shaders/FXAAShader.js"
-
- "https://threejs.org/examples/jsm/math/SimplexNoise.js"
-
-
-
-
-
-
-
-
-
-
+import Environment from "./cool-env.js"
 
 
 
@@ -63,6 +31,10 @@ catch{
   camera.position.copy(lastSavedPosition);
   ocontrols.target.set(0,0,0) 
 }
+
+
+new Environment(renderer,scene)
+
 
 const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 1, 1);
 const backMaterial = new THREE.MeshStandardMaterial({
@@ -273,20 +245,3 @@ renderer.setAnimationLoop(() => {
     localStorage.controlsTarget = JSON.stringify(ocontrols.target) 
   }
 });
-
-//for (let i = 0; i < elements.length; i++) enforceGround(elements[i]);
-
-/*
-const mesh = new THREE.Mesh(geometry, backMaterial);
-mesh.add(new THREE.Mesh(geometry,frontMaterial));
-mesh.children[0].renderOrder = 2;
-scene.add(mesh);
-mesh.position.set(-.25,.5,-.25)
-const mesh2 = mesh.clone();
-scene.add(mesh2);
-mesh2.position.set(.25,1.,.25)
-elements = [mesh, mesh2]
-*/
-
-//elements = fc.eval(`
-//`).elements;
