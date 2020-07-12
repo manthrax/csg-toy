@@ -89,6 +89,30 @@ class Prims {
   }
 }
 
+
+
+let backMaterial = new THREE.MeshStandardMaterial({
+  color: "red",
+  opacity: 0.5,
+  transparent: true,
+  side: THREE.BackSide,
+  depthWrite: false
+});
+let frontMaterial = new THREE.MeshStandardMaterial({
+  color: "blue",
+  opacity: 0.5,
+  transparent: true,
+  side: THREE.FrontSide
+});
+
+let csgMaterial = new THREE.MeshStandardMaterial({
+  color: "white",
+  opacity: 0.9,
+  transparent: false,
+  side: THREE.FrontSide
+});
+
+
 let empty = new THREE.Object3D();
 class FCAD {
   toJSON() {
@@ -127,7 +151,8 @@ class FCAD {
     });
   }
 
-  constructor(scene) {
+  constructor(scene,csgMat = csgMaterial) {
+    csgMaterial = csgMat;
     this.scene = scene;
     this.nodes = [];
     this.elements = [];
@@ -205,7 +230,7 @@ class FCAD {
     };
     
     try {
-      throw ""
+      //throw ""
       this.fromJSON(JSON.parse(localStorage.csgscene));
     } catch {
       mkDefault();
@@ -215,24 +240,3 @@ class FCAD {
   }
 }
 export default FCAD;
-
-const backMaterial = new THREE.MeshStandardMaterial({
-  color: "red",
-  opacity: 0.5,
-  transparent: true,
-  side: THREE.BackSide,
-  depthWrite: false
-});
-const frontMaterial = new THREE.MeshStandardMaterial({
-  color: "blue",
-  opacity: 0.5,
-  transparent: true,
-  side: THREE.FrontSide
-});
-
-const csgMaterial = new THREE.MeshStandardMaterial({
-  color: "white",
-  opacity: 0.9,
-  transparent: false,
-  side: THREE.FrontSide
-});

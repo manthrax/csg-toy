@@ -165,13 +165,16 @@ class Environment {
     tx.wrapS = tx.wrapT = THREE.RepeatWrapping;
 
     //let mkMat=(color) => new THREE.MeshStandardMaterial({color:color,roughness:0.51,metalness:0.7,map:tx});
-    let mkMat = color =>
+    let mkMat = (color='white') =>
       new THREE.MeshStandardMaterial({
         color: color,
         roughness: 0.51,
         metalness: 0.7,
         roughnessMap: tx
       });
+    //debugger
+    Environment.mkMat = mkMat;
+    
     let rnd = rng => (Math.random() * 2 - 1) * (rng || 1);
     /*let mkLight = ()=>{
         let light1 = new THREE.PointLight();

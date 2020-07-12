@@ -21,19 +21,22 @@ renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setClearColor(0x101010);
 document.body.appendChild(renderer.domElement);
 ocontrols = new OrbitControls(camera, renderer.domElement);
+
+//debugger
 //ocontrols.autoRotate = true;
-try{
-  throw ''
-//   camera.position.copy(JSON.parse(localStorage.cameraPosition)) 
-//   ocontrols.target.copy(JSON.parse(localStorage.controlsTarget)) 
+try{ 
+  //throw ''
+  camera.position.copy(JSON.parse(localStorage.cameraPosition)) 
+  ocontrols.target.copy(JSON.parse(localStorage.controlsTarget)) 
 }
-catch{
+catch
+{
   camera.position.copy(lastSavedPosition);
   ocontrols.target.set(0,0,0) 
 }
 
 
-new Environment(renderer,scene,camera)
+let environment = new Environment(renderer,scene,camera)
 
 
 const geometry = new THREE.BoxBufferGeometry(1, 1, 1, 1, 1);
@@ -160,7 +163,7 @@ let fc;
 
 let cadScene = new THREE.Group();
 scene.add(cadScene);
-fc = new FCAD(cadScene);
+fc = new FCAD(cadScene,Environment.mkMat());
 
 tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
