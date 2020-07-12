@@ -37,20 +37,20 @@ class FNode {
 class Prims {
   static mesh(e, geometry, material = frontMaterial) {
     let m = new THREE.Mesh(geometry, material);
-    m.position.copy(e.position)
-    m.scale.copy(e.scale)
-    m.rotation.copy(e.rotation)
+    m.position.copy(e._position)
+    m.scale.copy(e._scale)
+    m.rotation.copy(e._rotation)
     m.userData.node = e;
     return m
   }
   static sphere(e) {
-    return this.mesh(e, new THREE.SphereGeometry(0.25, 16, 16));
+    return this.mesh(e, new THREE.SphereGeometry(.5, 16, 16));
   }
   static box(e) {
-    return this.mesh(e, new THREE.BoxGeometry(0.5, 0.5, 0.5));
+    return this.mesh(e, new THREE.BoxGeometry(1,1,1));
   }
   static cylinder(e) {
-    return this.mesh(e, new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16));
+    return this.mesh(e, new THREE.CylinderGeometry(0.5, 0.5, 1, 16));
   }
   static union(e) {
     return Prims.sphere(e);
@@ -108,15 +108,15 @@ class FCAD {
 
     let a = box()
       .size(1, 1, 1)
-      .position(6.15, 0.25, 0.25);
+      .position(2, 0.25, 2);
 
-    let b = box()
+    let b = cylinder()
       .size(1, 1, 1)
-      .position(4.15, 0.25, 0.25);
+      .position(3, 0.25, 3);
 
-    let c = box()
+    let c = sphere()
       .size(1, 1, 1)
-      .position(2.15, 0.25, 0.25);
+      .position(-3, 0.25 ,-3);
 
     function render() {
       self.elements = [];

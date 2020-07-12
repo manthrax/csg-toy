@@ -120,8 +120,9 @@ class Elements {
     this.forEach(s => s.parent.remove(s));
     this.elements = e.slice(0);
     this.selection = [];
+    
     this.forEach((s, i) => {
-      scene.attach(s.getMesh());
+      scene.attach(s);
       if (this.selected[i]) this.select(i);
     });
     this.update();
