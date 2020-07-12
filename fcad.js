@@ -69,7 +69,7 @@ class Prims {
       e.args.forEach((b, i) => {
         if (!i) return;
         let bspB = CSG.fromMesh(b.getMesh());
-        bspA = bspA.union(bspB);
+        bspA = bspA[o](bspB);
       });
       console.log(bspA)
       return Prims.bindNodeToMesh(e, CSG.toMesh(bspA, p.matrix, csgMaterial));

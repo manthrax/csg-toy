@@ -60,6 +60,7 @@ var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
 let selectionMaterial = frontMaterial.clone();
 selectionMaterial.color.set(0xffd000);
+selectionMaterial.opacity = .5
 let transformGroup = new THREE.Group();
 scene.add(transformGroup);
 tcontrol.attach(transformGroup);
