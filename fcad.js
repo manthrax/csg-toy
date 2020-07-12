@@ -151,7 +151,9 @@ class FCAD {
     });
   }
 
-  constructor(scene,csgMat = csgMaterial) {
+  constructor(scene,csgMat = csgMaterial,frontMat = frontMaterial,backMat = backMaterial) {
+    frontMaterial = frontMat
+    backMaterial = backMat
     csgMaterial = csgMat;
     this.scene = scene;
     this.nodes = [];

@@ -83,9 +83,11 @@ scene.add(GridMaterial.makeGrid());
 
 var raycaster = new THREE.Raycaster();
 var mouse = new THREE.Vector2();
+
 let selectionMaterial = frontMaterial.clone();
 selectionMaterial.color.set(0xffd000);
 selectionMaterial.opacity = .9
+
 let transformGroup = new THREE.Group();
 scene.add(transformGroup);
 tcontrol.attach(transformGroup);
@@ -169,7 +171,15 @@ let fc;
 
 let cadScene = new THREE.Group();
 scene.add(cadScene);
-fc = new FCAD(cadScene,Environment.mkMat());
+
+let transpMat=(color)=>{
+  let m = Environment.mkMat(color)
+  m.transparent = true;
+  m.opacity = 0.7
+  return m
+}
+
+fc = new FCAD(cadScene,Environment.mkMat('white'),transpMat('red'),transpMat('blue'));
 
 tcontrol.addEventListener("dragging-changed", event => {
   ocontrols.enabled = !event.value;
