@@ -91,8 +91,11 @@ tcontrol.rotationSnap = Math.PI / 16;
 scene.add(tcontrol);
 let tbox = new THREE.Box3();
 let enforceGround = mesh => {
+  let par = mesh.parent;
+  scene.attach(mesh)
   tbox.setFromObject(mesh);
-  if (tbox.min.y < 0) mesh.position.sub(mesh.worldToLocal(tv30.set(0,tbox.min.y,0)))
+  if (tbox.min.y < 0) mesh.position.y-=tbox.min.y
+  par.attach(mesh)
 };
 
 scene.add(GridMaterial.makeGrid());
