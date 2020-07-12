@@ -101,25 +101,29 @@ class FCAD {
       let o={}
       o.type=n.type
       n.name && (o.name = n.name);
-      n.args && (o.args=n.iargs);
+      n.args && n.args.length && (o.args=n.iargs);
       (!n._position.equals(empty.position)) && (o.position=n._position);
       (!n._scale.equals(empty.scale)) && (o.scale=n._scale);
-      (!n._rotation.equals(empty.rotation)) && (o.rotation=n.rotation);
+      (!n._rotation.equals(empty.rotation)) && (o.rotation=n._rotation);
       out.push(o)
     })
     return out;
   }
-  fromJSON(jd){
-    for(let i=0;i<js.length;i++){
-      let e=js[i]
-      
-    }
+  fromJSON(js){
+    js.forEach((e,i)=>this.nodes.push(new FNode(this,e.type)))
+    for(let i=0;i<js.length;i++)
+    js.forEach((e,i)=>e.args && e.args.forEach((a,ai)=>e.args[ai]=this.nodes[a]))
   }
+  
+  
   constructor(scene) {
     this.scene = scene;
     this.nodes = [];
     this.elements = [];
 
+    
+    
+    
     let addNode = node => {
       this.nodes.push(node);
       return node;
@@ -127,7 +131,7 @@ class FCAD {
     function nnode(type, args) {
       return addNode(new FNode(self, type, Array.prototype.slice.call(args)));
     }
-
+let mkDefault=()=>{
     let self = this;
     let vec3 = (x, y, z) => new THREE.Vector3(x, y, z);
     let sphere = () => addNode(new FNode(this, "sphere"));
@@ -179,6 +183,11 @@ class FCAD {
     this.update = () => {
       return render(a, b, c, u ).elements;
     };
+}
+
+this.update=()=>{
+      return this;}
+
     this.update();
     console.log(this.toJSON())
   }
