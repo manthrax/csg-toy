@@ -1,26 +1,26 @@
 import * as THREE from "https://threejs.org/build/three.module.js";
-import {CSS3DRenderer} from "https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js";
+import { CSS3DRenderer } from "https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js";
 
-import {HDRCubeTextureLoader} from "https://threejs.org/examples/jsm/loaders/HDRCubeTextureLoader.js";
-import {RGBELoader} from "https://threejs.org/examples/jsm/loaders/RGBELoader.js";
+import { HDRCubeTextureLoader } from "https://threejs.org/examples/jsm/loaders/HDRCubeTextureLoader.js";
+import { RGBELoader } from "https://threejs.org/examples/jsm/loaders/RGBELoader.js";
 //import {PMREMGenerator} from "https://threejs.org/examples/jsm/pmrem/PMREMGenerator.js";
 //import {PMREMCubeUVPacker} from "https://threejs.org/examples/jsm/pmrem/PMREMCubeUVPacker.js";
 
-import {EffectComposer} from "https://threejs.org/examples/jsm/postprocessing/EffectComposer.js";
-import {RenderPass} from "https://threejs.org/examples/jsm/postprocessing/RenderPass.js";
-import {ShaderPass} from "https://threejs.org/examples/jsm/postprocessing/ShaderPass.js";
-import {CopyShader} from "https://threejs.org/examples/jsm/shaders/CopyShader.js";
-import {LuminosityHighPassShader} from "https://threejs.org/examples/jsm/shaders/LuminosityHighPassShader.js";
-import {UnrealBloomPass} from "https://threejs.org/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { EffectComposer } from "https://threejs.org/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "https://threejs.org/examples/jsm/postprocessing/RenderPass.js";
+import { ShaderPass } from "https://threejs.org/examples/jsm/postprocessing/ShaderPass.js";
+import { CopyShader } from "https://threejs.org/examples/jsm/shaders/CopyShader.js";
+import { LuminosityHighPassShader } from "https://threejs.org/examples/jsm/shaders/LuminosityHighPassShader.js";
+import { UnrealBloomPass } from "https://threejs.org/examples/jsm/postprocessing/UnrealBloomPass.js";
 
-import {SSAOShader} from "https://threejs.org/examples/jsm/shaders/SSAOShader.js";
-import {SSAOPass} from "https://threejs.org/examples/jsm/postprocessing/SSAOPass.js";
-import {FXAAShader} from "https://threejs.org/examples/jsm/shaders/FXAAShader.js";
+import { SSAOShader } from "https://threejs.org/examples/jsm/shaders/SSAOShader.js";
+import { SSAOPass } from "https://threejs.org/examples/jsm/postprocessing/SSAOPass.js";
+import { FXAAShader } from "https://threejs.org/examples/jsm/shaders/FXAAShader.js";
 
-import {SimplexNoise} from "https://threejs.org/examples/jsm/math/SimplexNoise.js";
+import { SimplexNoise } from "https://threejs.org/examples/jsm/math/SimplexNoise.js";
 
 class Environment {
-  constructor(renderer,scene,camera) {
+  constructor(renderer, scene, camera) {
     let ssaoPass;
     let fxaaPass;
     function setupPostProcessing() {
@@ -98,32 +98,26 @@ class Environment {
         "https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fpz.hdr?v=1594535459665",
         "https://cdn.glitch.com/02b1773f-db1a-411a-bc71-ff25644e8e51%2Fnz.hdr?v=1594535458938"
       ];
-      dir = dir || "";//"san_guiseppe_bridge";
+      dir = dir || ""; //"san_guiseppe_bridge";
       hdrCubeMap = new HDRCubeTextureLoader()
-        //.setPath("./assets/" + dir + "/")
-        .load(THREE.UnsignedByteType, hdrUrls, function() {
-          var pmremGenerator = new THREE.PMREMGenerator(hdrCubeMap);
-          pmremGenerator.update(renderer);
+        .setDataType(THREE.UnsignedByteType)
+        .load(hdrUrls, function() {
+          var pmremGenerator = new THREE.PMREMGenerator(renderer);
 
-          var pmremCubeUVPacker = new THREE.PMREMCubeUVPacker(
-            pmremGenerator.cubeLods
-          );
-          pmremCubeUVPacker.update(renderer);
-
-          hdrCubeRenderTarget = pmremCubeUVPacker.CubeUVRenderTarget;
+          hdrCubeRenderTarget = pmremGenerator.fromCubemap(hdrCubeMap);
+          pmremGenerator.dispose();
 
           hdrCubeMap.magFilter = THREE.LinearFilter;
           hdrCubeMap.needsUpdate = true;
 
-          pmremGenerator.dispose();
-          pmremCubeUVPacker.dispose();
-
           scene.background = hdrCubeMap;
 
-          var newEnvMap = hdrCubeRenderTarget
+          var newEnvMap =  hdrCubeRenderTarget
             ? hdrCubeRenderTarget.texture
             : null;
-
+        
+        scene.environment = newEnvMap
+/*
           if (true)
             scene.traverse(e => {
               if (e.isMesh) {
@@ -131,11 +125,9 @@ class Environment {
                 e.material.needsUpdate = true;
                 e.material.roughness = 0.7;
                 e.material.metalness = 0.7;
-                //e.material.flatShading = true;
                 e.castShadow = e.receiveShadow = true;
-                //if(e.name!=='ground')e.material.wireframe = true;
               }
-            });
+            });*/
         });
       return { cubeMap: hdrCubeMap, cubeRenderTarget: hdrCubeRenderTarget };
     }
@@ -207,17 +199,15 @@ class Environment {
     let ground = new THREE.Mesh(
       new THREE.BoxGeometry(20, 1, 20),
       mkMat("grey")
-    ); 
+    );
     scene.add(ground);
-    ground.position.y -= 1.5;
+    ground.position.y -= .6;
     ground.name = "ground";
 
     ground.material.roughnessMap = ground.material.roughnessMap.clone();
     ground.material.roughnessMap.repeat.set(8, 8);
     ground.material.roughnessMap.needsUpdate = true;
 
-    let box = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), mkMat("grey"));
-    scene.add(box);
   }
 }
 
