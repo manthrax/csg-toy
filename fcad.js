@@ -28,25 +28,18 @@ class FNode {
     this._rotation.set(x, y, z, order);
     return this;
   }
-  
   getMesh(){
-    let prim = FCad.prims[]
-    if(FCad)
-    return new THREE.Mesh(new THREE.)
+    return Prims[this.type]()
   }  
 }
 
-FNode.prims = (function(){
-  let mkprim = geom => {
-    let m = new THREE.Mesh(geom, frontMaterial);
-    return m;
-  }    
-  return {
-    sphere: mkprim(new THREE.SphereGeometry(0.25, 16, 16)),
-    box: mkprim(new THREE.BoxGeometry(0.5, 0.5, 0.5)),
-    cylinder: mkprim(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16))
-  }
-})()
+class Prims{
+ static mesh (geometry,material = frontMaterial) {return new THREE.Mesh(geometry, material)}
+ static sphere(){ return this.mesh(new THREE.SphereGeometry(0.25, 16, 16))}
+ static box(){ return this.mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5))}
+ static cylinder(){ return this.mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16))}
+ static union(){}
+}
 
 
 class FCAD {
