@@ -59,10 +59,9 @@ class Prims {
     return this.mesh(e, new THREE.CylinderGeometry(0.5, 0.5, 1, 16), material);
   }
   static union(e) {
-    debugger
     if (e.args.length) {
       let p = Prims.empty(e, csgMaterial);
-      var bspA = CSG.fromMesh(p);
+      var bspA = CSG.fromMesh(e.args[0].getMesh());
       e.args.forEach((b, i) => {
         if (!i) return;
         let bspB = CSG.fromMesh(b.getMesh());
@@ -111,7 +110,10 @@ class FCAD {
   fromJSON(js) {
     js.forEach((e, i) => this.nodes.push(new FNode(this, e.type)));
     js.forEach((e, i) => {
+      let n = 
       e.args && e.args.forEach((a, ai) => (e.args[ai] = this.nodes[a]));
+      e.args && (this.nodes[i].args=e.args)
+      //debugger
       e.position && this.nodes[i]._position.copy(e.position);
       e.scale && this.nodes[i]._scale.copy(e.scale);
       e.rotation && this.nodes[i]._rotation.copy(e.rotation);
@@ -143,6 +145,7 @@ class FCAD {
     this.update = () => {
       render(...this.nodes);
       localStorage.csgscene = JSON.stringify(this.toJSON());
+      //debugger
       return this.elements;
     };
 
@@ -185,11 +188,12 @@ class FCAD {
 
       let u = union(a, b);
 
-      this.update = () => {
-        return render(a, b, c, u).elements;
-      };
+      //this.update = () => {
+      //  return render(a, b, c, u).elements;
+      //};
     };
     try {
+        throw ""
       this.fromJSON(JSON.parse(localStorage.csgscene));
     } catch {
       mkDefault();
