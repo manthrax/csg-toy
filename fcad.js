@@ -30,7 +30,7 @@ class FNode {
   }
   getMesh() {
     let p = Prims[this.type](this)
-        p.updateMatrixWorld();
+    p.updateMatrixWorld();
     return p
   }
 }
@@ -40,10 +40,12 @@ class Prims {
     m.position.copy(e._position);
     m.scale.copy(e._scale);
     m.rotation.copy(e._rotation);
+    m.castShadow = m.receiveShadow = true;
     m.userData.node = e;
     return m;
   }
   static mesh(e, geometry, material = frontMaterial) {
+
     let m = new THREE.Mesh(geometry, material);
     Prims.bindNodeToMesh(e, m);
     return m;
@@ -68,12 +70,16 @@ class Prims {
       e.args.forEach((b, i) => {
         if (!i) return;
         let bspB = CSG.fromMesh(b.getMesh());
-        bspA = bspA[o](bspB);
+        let op = o;
+        b.operation && (op = b.operation)
+        bspA = bspA[op](bspB);
       });
       //console.log(bspA)
       return Prims.bindNodeToMesh(e, CSG.toMesh(bspA, p.matrix, csgMaterial));
     }
-    return Prims.sphere(e, csgMaterial);
+
+    return Prims[e.type](e)
+    //return Prims.sphere(e, csgMaterial);
   }
   static union(e) {
     return Prims.operation('union',e)
@@ -134,6 +140,7 @@ class FCAD {
       !n._position.equals(empty.position) && (o.position = n._position);
       !n._scale.equals(empty.scale) && (o.scale = n._scale);
       !n._rotation.equals(empty.rotation) && (o.rotation = n._rotation);
+      n.operation &&  (o.operation = n.operation)
       out.push(o);
     });
     return out;
@@ -148,6 +155,7 @@ class FCAD {
       e.position && n._position.copy(e.position);
       e.scale && n._scale.copy(e.scale);
       e.rotation && n._rotation.copy(e.rotation);
+      e.operation && (n.operation = e.operation);
     });
   }
 
@@ -224,7 +232,7 @@ class FCAD {
         .size(1, 1, 1)
         .position(5, 0.5, 2);
 
-      let u = subtract(a, b, c, d);
+      let u = union(a, b, c, d);
 
       //this.update = () => {
       //  return render(a, b, c, u).elements;
@@ -232,10 +240,14 @@ class FCAD {
     };
     
     try {
-      //throw ""
+      if(localStorage.needsReset)
+        throw ""
       this.fromJSON(JSON.parse(localStorage.csgscene));
     } catch {
-      mkDefault();
+      delete localStorage.needsReset
+      let def = `[{"type":"box","position":{"x":2.25,"y":1.2000000000000002,"z":1.8}},{"type":"box","position":{"x":2,"y":0.5,"z":1.7000000000000002}},{"type":"sphere","position":{"x":2.25,"y":1.75,"z":1.75}},{"type":"cylinder","position":{"x":2.6,"y":0.5,"z":1.1}},{"type":"union","args":[0,1,2,3],"position":{"x":-0.55,"y":1.2000000000000002,"z":-0.8}}]`
+      this.fromJSON(JSON.parse(def));
+      //mkDefault();
     }
     this.update();
     localStorage.csgscene = JSON.stringify(this.toJSON());

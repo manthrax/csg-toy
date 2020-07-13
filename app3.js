@@ -19,6 +19,10 @@ let lastSavedPosition=new THREE.Vector3(2, 1.5, 2)
 scene = new THREE.Scene();
 renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setClearColor(0x101010);
+renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.shadowMap.enabled = true;
+
 document.body.appendChild(renderer.domElement);
 ocontrols = new OrbitControls(camera, renderer.domElement);
 
@@ -59,13 +63,14 @@ let frontMaterial = Environment.mkMat('yellow')
 frontMaterial.transparent = true;
 frontMaterial.opacity = .25;
 
-
+/*
 const light = new THREE.PointLight("white", 0.5);
 light.position.set(20, 30, 40);
 scene.add(light);
 const light1 = new THREE.PointLight("white", 0.5);
 light1.position.set(-20, 30, -40);
 scene.add(light1);
+*/
 let tcontrol = new TransformControls(camera, renderer.domElement);
 tcontrol.translationSnap = 0.05;
 tcontrol.rotationSnap = Math.PI / 16;
@@ -79,7 +84,7 @@ let enforceGround = mesh => {
   par.attach(mesh)
 };
 
-let gridmat = Environment.mkMat(0x20202)
+let gridmat = Environment.mkMat(0x404040)
 gridmat.transparent = true;
 scene.add(GridMaterial.makeGrid(gridmat));
 
@@ -256,6 +261,14 @@ window.addEventListener(
     if (e.shiftKey) tcontrol.setMode("translate");
     if (e.ctrlKey) tcontrol.setMode("rotate");
     if (e.altKey) tcontrol.setMode("scale");
+    if (e.code === 'Equal'){
+        elements.forSelected(e=>e.userData.node.operation = 'union')
+    elements.set(fc.update());
+    }
+    if (e.code === 'Minus'){
+        elements.forSelected(e=>e.userData.node.operation = 'subtract')
+    elements.set(fc.update());
+    }
     if (e.code === 'KeyW'){
       scene.traverse((e)=>{
         if(e.isMesh){
@@ -283,7 +296,10 @@ let resizeFn = event => {
   let height = window.innerHeight;
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
+
   renderer.setSize(width, height);
+  if(environment && environment.composer)
+      environment.resize(width,height)
 };
 
 resizeFn();
@@ -292,7 +308,10 @@ window.addEventListener("resize", resizeFn, false)
 
 renderer.setAnimationLoop(() => {
   ocontrols.update();
-  renderer.render(scene, camera);
+  if(environment && environment.composer)
+	 environment.composer.render();
+  else
+    renderer.render(scene, camera);
   
   if(!lastSavedPosition.equals(camera.position)){
     lastSavedPosition.copy(camera.position)

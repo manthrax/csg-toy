@@ -23,6 +23,7 @@ class Environment {
   constructor(renderer, scene, camera) {
     let ssaoPass;
     let fxaaPass;
+    let self = this;
     function setupPostProcessing() {
       var bloomPass = new UnrealBloomPass(
         new THREE.Vector2(window.innerWidth, window.innerHeight),
@@ -39,7 +40,8 @@ class Environment {
       var renderScene = new RenderPass(scene, camera);
 
       let composer = new EffectComposer(renderer);
-      composer.setSize(window.innerWidth, window.innerHeight);
+      let width = window.innerWidth;
+      let height = window.innerHeight;
 
       composer.addPass(renderScene);
 
@@ -49,8 +51,6 @@ class Environment {
 
       var pixelRatio = renderer.getPixelRatio();
 
-      let width = window.innerWidth;
-      let height = window.innerHeight;
       let copyPass = new ShaderPass(THREE.CopyShader);
 
       ssaoPass = new SSAOPass(scene, camera, width, height);
@@ -58,11 +58,18 @@ class Environment {
       ssaoPass.maxDistance = 0.28;
       ssaoPass.kernelRadius = 10.1;
 
+
+self.resize=(width,height)=>{
+
+      composer.setSize(width,height);
+
       fxaaPass.material.uniforms["resolution"].value.x =
         1 / (width * pixelRatio);
       fxaaPass.material.uniforms["resolution"].value.y =
-        1 / (window.innerHeight * pixelRatio);
+        1 / (height * pixelRatio);
 
+}
+      self.resize(window.innerWidth, window.innerHeight);
       //bloomPass.renderToScreen = false;
 
       composer.addPass(fxaaPass);
@@ -77,7 +84,7 @@ class Environment {
       //renderer.toneMapping = THREE.ReinhardToneMapping;
       return composer;
     }
-    let composer = setupPostProcessing();
+    let composer = this.composer = setupPostProcessing();
 
     function loadHDR(dir) {
       var hdrCubeRenderTarget;
@@ -206,7 +213,7 @@ class Environment {
     scene.add(ground);
     ground.position.y -= .51;
     ground.name = "ground";
-
+ground.receiveShadow = true;
     ground.material.roughnessMap = ground.material.roughnessMap.clone();
     ground.material.roughnessMap.repeat.set(8, 8);
     ground.material.roughnessMap.needsUpdate = true;
